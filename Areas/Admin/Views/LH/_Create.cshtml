@@ -1,0 +1,60 @@
+﻿@model QuanLyDKHP.Models.LichHoc
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "createForm" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        @Html.LabelFor(model => model.ID_LHP, "Lớp học phần", new { @class = "form-label" })
+        @Html.DropDownListFor(model => model.ID_LHP, new SelectList(ViewBag.LopHPs, "ID_LHP", "Display"), "-- Chọn lớp học phần --", new { @class = "form-select" })
+        @Html.ValidationMessageFor(model => model.ID_LHP, "", new { @class = "error" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Thu, "Thứ", new { @class = "form-label" })
+        @Html.DropDownListFor(model => model.Thu, new SelectList(new[]
+        {
+            new { Value = "2", Text = "Thứ Hai" },
+            new { Value = "3", Text = "Thứ Ba" },
+            new { Value = "4", Text = "Thứ Tư" },
+            new { Value = "5", Text = "Thứ Năm" },
+            new { Value = "6", Text = "Thứ Sáu" },
+            new { Value = "7", Text = "Thứ Bảy" }
+        }, "Value", "Text"), "-- Chọn thứ --", new { @class = "form-select" })
+        @Html.ValidationMessageFor(model => model.Thu, "", new { @class = "error" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Tiet, "Tiết", new { @class = "form-label" })
+        @Html.DropDownListFor(model => model.Tiet, new SelectList(new[]
+        {
+            new { Value = "123", Text = "Tiết 1-3" },
+            new { Value = "456", Text = "Tiết 4-6" },
+            new { Value = "789", Text = "Tiết 7-9" },
+            new { Value = "012", Text = "Tiết 10-12" }
+        }, "Value", "Text"), "-- Chọn tiết --", new { @class = "form-select" })
+        @Html.ValidationMessageFor(model => model.Tiet, "", new { @class = "error" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.PhongHoc, "Phòng học", new { @class = "form-label" })
+        @Html.TextBoxFor(model => model.PhongHoc, new { @class = "form-control", placeholder = "VD: A101" })
+        @Html.ValidationMessageFor(model => model.PhongHoc, "", new { @class = "error" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.TuNgay, "Từ ngày", new { @class = "form-label" })
+        @Html.TextBoxFor(model => model.TuNgay, new { @class = "form-control", type = "date" })
+        @Html.ValidationMessageFor(model => model.TuNgay, "", new { @class = "error" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.DenNgay, "Đến ngày", new { @class = "form-label" })
+        @Html.TextBoxFor(model => model.DenNgay, new { @class = "form-control", type = "date" })
+        @Html.ValidationMessageFor(model => model.DenNgay, "", new { @class = "error" })
+    </div>
+    if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @Html.ValidationSummary(false, "", new { @class = "error" })
+        </div>
+    }
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </div>
+}

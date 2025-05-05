@@ -1,0 +1,151 @@
+﻿@model List<QuanLyDKHP.Models.DKHP>
+@{
+    ViewBag.Title = "Lịch sử đăng ký";
+    Layout = "~/Views/Shared/_LayoutSV.cshtml";
+    var daLoc = Request["idHK"] != null && Request["idNH"] != null;
+    int stt = 1;
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "SinhVien")">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Lịch sử đăng ký</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<hr />
+
+
+@using (Html.BeginForm("XemDangKy", "DKHP", FormMethod.Get, new { @class = "row g-3" }))
+{
+    <div class="col-md-2">
+        <label for="idHK" class="form-label fw-bold">Học kỳ</label>
+        @Html.DropDownList("idHK", (SelectList)ViewBag.HocKys, "Chọn học kỳ", new { @class = "form-select" })
+    </div>
+    <div class="col-md-2">
+        <label for="idNH" class="form-label fw-bold">Năm học</label>
+        @Html.DropDownList("idNH", (SelectList)ViewBag.NamHocs, "Chọn năm học", new { @class = "form-select" })
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">
+            <i class="bx bx-filter-alt me-1"></i>Lọc dữ liệu
+        </button>
+    </div>
+}
+<br />
+
+@if (TempData["Loi"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bx bx-error-circle me-2"></i>
+        @TempData["Loi"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ThanhCong"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bx bx-check-circle me-2"></i>
+        @TempData["ThanhCong"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (daLoc)
+{
+    if (Model != null && Model.Any())
+    {
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Danh sách học phần đã đăng ký</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" style="width: 60px;">STT</th>
+                                <th style="width: 120px;">Mã lớp</th>
+                                <th>Tên học phần</th>
+                                <th>Giảng viên</th>
+                                <th class="text-center" style="width: 80px;">Số TC</th>
+                                <th style="width: 200px;">Thời gian</th>
+                                <th class="text-center" style="width: 120px;">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var d in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@(stt++)</td>
+                                    <td><span class="fw-medium">@d.LopHP.MaLop</span></td>
+                                    <td>@d.LopHP.HocPhan.TenHP</td>
+                                    <td>@d.LopHP.GiangVien.HoTen</td>
+                                    <td class="text-center">@d.LopHP.HocPhan.SoTC</td>
+                                    <td>
+                                        @if (d.TrangThai == 1)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <i class="bx bx-calendar text-primary me-1"></i>
+                                                @d.ThoiGianDangKy.ToString("dd/MM/yyyy HH:mm:ss")
+                                            </div>
+                                        }
+                                        else if (d.TrangThai == 2 && d.ThoiGianHuy.HasValue)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <i class="bx bx-calendar-x text-secondary me-1"></i>
+                                                @d.ThoiGianHuy.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                            </div>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (d.TrangThai == 1)
+                                        {
+                                            <span class="badge bg-success rounded-pill">Đã đăng ký</span>
+                                        }
+                                        else if (d.TrangThai == 2)
+                                        {
+                                            <span class="badge bg-secondary rounded-pill">Đã hủy</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bx bx-info-circle me-1"></i>
+                        Tổng số học phần: @Model.Count() | Tín chỉ đã đăng ký: @Model.Where(d => d.TrangThai == 1).Sum(d => d.LopHP.HocPhan.SoTC)
+                    </small>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bx bx-calendar-x text-danger" style="font-size: 5rem;"></i>
+            </div>
+            <h4>Bạn không đăng ký học phần nào</h4>
+            <p class="text-muted">Trong học kỳ và năm học đã chọn, bạn chưa đăng ký học phần nào.</p>
+        </div>
+    }
+}
+else
+{
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bx bx-calendar-check text-primary" style="font-size: 5rem;"></i>
+        </div>
+        <h4>Vui lòng chọn học kỳ và năm học</h4>
+        <p class="text-muted">Hãy lựa chọn học kỳ và năm học để xem lịch sử đăng ký học phần</p>
+    </div>
+}

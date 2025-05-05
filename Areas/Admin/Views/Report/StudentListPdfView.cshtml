@@ -1,0 +1,71 @@
+﻿
+
+<h2>StudentListPdfView</h2>
+
+@model IEnumerable<QuanLyDKHP.Models.SinhVien>
+@{
+    Layout = null; // KHÔNG sử dụng Layout chung
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Danh sách Sinh viên</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        h2, h3 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>Danh sách Sinh viên Đăng ký</h2>
+    <h3>@ViewBag.LopHPInfo</h3> @* ViewBag vẫn hoạt động với Rotativa *@
+
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã SV</th>
+                <th>Họ Tên</th>
+                <th>Giới Tính</th>
+                <th>Ngày Sinh</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int stt = 1;}
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(stt++)</td>
+                    <td>@item.MaSV</td>
+                    <td>@item.HoTen</td>
+                    <td>@(item.GioiTinh ? "Nam" : "Nữ")</td>
+                    <td>@item.NgaySinh.ToString("dd/MM/yyyy")</td> @* Định dạng ngày trong PDF *@
+                    <td>@item.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,63 @@
+﻿@model List<QuanLyDKHP.Models.LichHoc>
+@using QuanLyDKHP.Models
+
+@{
+    ViewBag.Title = "Thời khóa biểu";
+    Layout = "~/Views/Shared/_LayoutSV.cshtml";
+    var tietMax = 10; // Số tiết tối đa trong ngày
+}
+
+<h2 class="mb-3">Thời khóa biểu dạng lưới</h2>
+
+@using (Html.BeginForm("LichHoc", "SinhVien", FormMethod.Get))
+{
+    <div class="row mb-3">
+        <div class="col-md-4">
+            @Html.Label("Năm học")
+            @Html.DropDownList("idNH", (SelectList)ViewBag.ID_NH, "-- Chọn năm học --", new { @class = "form-control" })
+        </div>
+        <div class="col-md-4">
+            @Html.Label("Học kỳ")
+            @Html.DropDownList("idHK", (SelectList)ViewBag.ID_HK, "-- Chọn học kỳ --", new { @class = "form-control" })
+        </div>
+        <div class="col-md-4 mt-4 pt-2">
+            <button type="submit" class="btn btn-primary mt-2">Lọc</button>
+        </div>
+    </div>
+}
+
+<table class="table table-bordered text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Tiết</th>
+            @for (int thu = 2; thu <= 7; thu++)  // Thứ 2 đến thứ 7
+            {
+                <th>Thứ @thu</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (int tiet = 1; tiet <= tietMax; tiet++)
+        {
+            <tr>
+                <td><strong>@tiet</strong></td>
+                @for (int thu = 2; thu <= 7; thu++)
+                {
+                    var buoi = Model.FirstOrDefault(l => l.Tiet == tiet.ToString() && l.Thu == thu);
+                    if (buoi != null)
+                    {
+                        <td class="bg-light">
+                            <div class="fw-bold">@buoi.LopHP.HocPhan.TenHP</div>
+                            <div>@buoi.LopHP.MaLop</div>
+                            <div>Phòng: @buoi.PhongHoc</div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+</table>

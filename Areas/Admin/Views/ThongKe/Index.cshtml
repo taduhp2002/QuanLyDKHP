@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h3>Thống kê số lượng sinh viên đăng ký</h3>
+
+<form id="filterForm">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            @Html.DropDownList("idNH", (SelectList)ViewBag.NamHocs, "Chọn năm học", new { @class = "form-control" })
+        </div>
+        <div class="col-md-4">
+            @Html.DropDownList("idHK", (SelectList)ViewBag.HocKys, "Chọn học kỳ", new { @class = "form-control" })
+        </div>
+        <div class="col-md-4">
+            <button type="button" class="btn btn-primary" onclick="loadData()">Xem thống kê</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered" id="tableThongKe">
+    <thead>
+        <tr>
+            <th>Mã lớp</th>
+            <th>Học phần</th>
+            <th>Số SV đăng ký</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<button class="btn btn-success" onclick="exportExcel()">Xuất Excel</button>
+<button class="btn btn-danger" onclick="exportPDF()">Xuất PDF</button>
+
+@section Scripts {
+    <script>
+        function loadData() {
+            var idNH = $('#idNH').val();
+            var idHK = $('#idHK').val();
+
+            $.getJSON('/ThongKe/SoLuongDangKy', { idNH: idNH, idHK: idHK }, function (data) {
+                var html = '';
+                data.forEach(item => {
+                    html += `<tr>
+                        <td>${item.MaLop}</td>
+                        <td>${item.HocPhan}</td>
+                        <td>${item.SoLuongDangKy}</td>
+                    </tr>`;
+                });
+                $('#tableThongKe tbody').html(html);
+            });
+        }
+
+        function exportExcel() {
+            var idNH = $('#idNH').val();
+            var idHK = $('#idHK').val();
+            window.location = '/ThongKe/ExportExcel?idNH=' + idNH + '&idHK=' + idHK;
+        }
+
+        function exportPDF() {
+            var idNH = $('#idNH').val();
+            var idHK = $('#idHK').val();
+            window.open('/ThongKe/ExportPDF?idNH=' + idNH + '&idHK=' + idHK, '_blank');
+        }
+    </script>
+}
+

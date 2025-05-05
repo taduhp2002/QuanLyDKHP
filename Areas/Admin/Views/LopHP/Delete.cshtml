@@ -1,0 +1,66 @@
+﻿@model QuanLyDKHP.Models.LopHP
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-danger">Xác nhận xóa lớp học phần</h6>
+    </div>
+    <div class="card-body">
+        <h4 class="text-danger">Bạn có chắc chắn muốn xóa lớp học phần này?</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3">Mã lớp:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.MaLop)</dd>
+
+            <dt class="col-sm-3">Học phần:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.HocPhan.TenHP)</dd>
+
+            <dt class="col-sm-3">Giảng viên:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.GiangVien.HoTen)</dd>
+
+            <dt class="col-sm-3">Học kỳ:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.HocKy.TenHK)</dd>
+
+            <dt class="col-sm-3">Năm học:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.NamHoc.TenNH)</dd>
+
+            <dt class="col-sm-3">Sĩ số:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.SiSo)</dd>
+
+            <dt class="col-sm-3">Trạng thái:</dt>
+            <dd class="col-sm-9">
+                @if (Model.TrangThai == 1)
+                {
+                    <span class="badge bg-success">Mở đăng ký</span>
+                }
+                else if (Model.TrangThai == 2)
+                {
+                    <span class="badge bg-secondary">Đã đóng</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Đã hủy</span>
+                }
+            </dd>
+        </dl>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <div class="d-flex justify-content-between">
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Xác nhận xóa
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>

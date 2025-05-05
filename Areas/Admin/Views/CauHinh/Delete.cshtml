@@ -1,0 +1,27 @@
+﻿@model QuanLyDKHP.Models.CauHinhDKHP
+
+@{
+    ViewBag.Title = "Xác nhận xóa";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-danger mt-3">Xác nhận xóa cấu hình này?</h2>
+
+<div class="alert alert-danger">
+    Hành động này sẽ xóa vĩnh viễn cấu hình đăng ký học phần.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Năm học:</dt>
+    <dd class="col-sm-9">@Model.NamHoc.TenNH</dd>
+
+    <dt class="col-sm-3">Học kỳ:</dt>
+    <dd class="col-sm-9">@Model.HocKy.TenHK</dd>
+</dl>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+}

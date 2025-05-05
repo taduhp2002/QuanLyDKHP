@@ -1,0 +1,78 @@
+﻿@model QuanLyDKHP.Models.CauHinhDKHP
+
+@{
+    ViewBag.Title = "Chỉnh sửa cấu hình đăng ký học phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <h2>Chỉnh sửa cấu hình đăng ký học phần</h2>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.ID)
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ID_NH, "Năm học", htmlAttributes: new { @class = "form-label" })
+                            @Html.DropDownList("ID_NH", null, htmlAttributes: new { @class = "form-select" })
+                            @Html.ValidationMessageFor(model => model.ID_NH, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ID_HK, "Học kỳ", htmlAttributes: new { @class = "form-label" })
+                            @Html.DropDownList("ID_HK", null, htmlAttributes: new { @class = "form-select" })
+                            @Html.ValidationMessageFor(model => model.ID_HK, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SoTC_ToiDa, htmlAttributes: new { @class = "form-label" })
+                            @Html.EditorFor(model => model.SoTC_ToiDa, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SoTC_ToiDa, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NgayBatDau, htmlAttributes: new { @class = "form-label" })
+                            @Html.EditorFor(model => model.NgayBatDau, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                            @Html.ValidationMessageFor(model => model.NgayBatDau, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NgayKetThuc, htmlAttributes: new { @class = "form-label" })
+                            @Html.EditorFor(model => model.NgayKetThuc, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                            @Html.ValidationMessageFor(model => model.NgayKetThuc, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Lưu thay đổi
+            </button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    }
+</div>
+

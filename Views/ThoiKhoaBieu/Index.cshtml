@@ -1,0 +1,108 @@
+﻿@model List<QuanLyDKHP.Models.LichHoc>
+
+@{
+    ViewBag.Title = "Thời Khóa Biểu";
+    Layout = "~/Views/Shared/_LayoutSV.cshtml";
+}
+
+<h2>Thời Khóa Biểu</h2>
+
+@if (ViewBag.Message != null)
+{
+    <p class="text-warning">@ViewBag.Message</p>
+}
+else
+{
+    <div class="form-group">
+        @using (Html.BeginForm("Index", "ThoiKhoaBieu", FormMethod.Get))
+        {
+            <label>Học kỳ:</label>
+            @Html.DropDownList("idHocKy", ViewBag.HocKys as SelectList, "Chọn học kỳ", new { @class = "form-control d-inline w-auto", @onchange = "this.form.submit();" })
+            <label>Năm học:</label>
+            @Html.DropDownList("idNamHoc", ViewBag.NamHocs as SelectList, "Chọn năm học", new { @class = "form-control d-inline w-auto", @onchange = "this.form.submit();" })
+        }
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm text-center">
+            <thead class="thead-light">
+                <tr>
+                    <th>Tiết</th>
+                    <th>Thứ 2</th>
+                    <th>Thứ 3</th>
+                    <th>Thứ 4</th>
+                    <th>Thứ 5</th>
+                    <th>Thứ 6</th>
+                    <th>Thứ 7</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int tiet = 1; tiet <= 12; tiet++)
+                {
+                    <tr>
+                        <td>@tiet</td>
+                        @for (int thu = 2; thu <= 7; thu++)
+                        {
+                            // Sử dụng biến item thay vì s để tránh xung đột
+                            var schedule = Model.FirstOrDefault(item => item.Thu == thu && IsTietMatch(item.Tiet, tiet));
+                            <td>
+                                @if (schedule != null && GetFirstTiet(schedule.Tiet) == tiet)
+                                {
+                                    <div class="schedule-item" style="background-color: #e6f3ff; padding: 5px; min-height: @(30 * GetTietCount(schedule.Tiet))px;">
+                                        <strong>@schedule.LopHP.HocPhan.TenHP</strong><br />
+                                        @schedule.LopHP.GiangVien.HoTen<br />
+                                        Phòng: @schedule.PhongHoc
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    .schedule-item {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 0.9em;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+        padding: 5px;
+    }
+</style>
+
+@functions {
+    // Kiểm tra xem tiết hiện tại có thuộc chuỗi Tiet không
+    bool IsTietMatch(string tiet, int currentTiet)
+    {
+        if (string.IsNullOrEmpty(tiet)) return false;
+        int[] tietNumbers = tiet == "123" ? new int[] { 1, 2, 3 } :
+                           tiet == "456" ? new int[] { 4, 5, 6 } :
+                           tiet == "789" ? new int[] { 7, 8, 9 } :
+                           tiet == "012" ? new int[] { 10, 11, 12 } : new int[] { };
+        return tietNumbers.Contains(currentTiet);
+    }
+
+    // Lấy tiết đầu tiên của chuỗi Tiet
+    int GetFirstTiet(string tiet)
+    {
+        if (string.IsNullOrEmpty(tiet)) return 0;
+        return tiet == "123" ? 1 :
+               tiet == "456" ? 4 :
+               tiet == "789" ? 7 :
+               tiet == "012" ? 10 : 0;
+    }
+
+    // Tính số tiết của chuỗi Tiet
+    int GetTietCount(string tiet)
+    {
+        if (string.IsNullOrEmpty(tiet)) return 0;
+        return 3; // Mỗi chuỗi Tiet ('123', '456', '789', '012') luôn có 3 tiết
+    }
+}

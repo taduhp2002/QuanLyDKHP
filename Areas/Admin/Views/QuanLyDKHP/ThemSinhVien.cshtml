@@ -1,0 +1,51 @@
+﻿@model IEnumerable<QuanLyDKHP.Models.SinhVien>
+
+@{
+    ViewBag.Title = "Thêm sinh viên vào lớp học phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Thêm sinh viên vào lớp học phần</h2>
+
+<p>
+    @Html.ActionLink("Quay lại danh sách sinh viên", "DanhSachSinhVien", new { id = ViewBag.ID_LHP }, new { @class = "btn btn-secondary" })
+</p>
+
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Mã sinh viên</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sv in Model)
+            {
+                <tr>
+                    <td>@sv.MaSV</td>
+                    <td>@sv.HoTen</td>
+                    <td>@sv.Email</td>
+                    <td>
+                        @using (Html.BeginForm("ThemSinhVien", "QuanLyDKHP", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="idSV" value="@sv.ID_SV" />
+                            <input type="hidden" name="idLHP" value="@ViewBag.ID_LHP" />
+                            <button type="submit" class="btn btn-success btn-sm">Thêm</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">
+        Tất cả sinh viên đã đăng ký lớp này.
+    </div>
+}

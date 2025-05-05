@@ -1,0 +1,205 @@
+﻿@model IEnumerable<QuanLyDKHP.Models.LichHoc>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@section styles {
+    <style>
+        .modal-lg {
+            max-width: 600px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+    </style>
+}
+<div class="container mt-4">
+    <h2>Quản lý lịch học</h2>
+    <div class="mb-3">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <select name="id_hk" class="form-select">
+                    <option value="">-- Chọn học kỳ --</option>
+                    @foreach (var hk in ViewBag.HocKys)
+                    {
+                        <option value="@hk.ID_HK" @(Request.QueryString["id_hk"] == hk.ID_HK.ToString() ? "selected" : "")>@hk.TenHK</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select name="id_nh" class="form-select">
+                    <option value="">-- Chọn năm học --</option>
+                    @foreach (var nh in ViewBag.NamHocs)
+                    {
+                        <option value="@nh.ID_NH" @(Request.QueryString["id_nh"] == nh.ID_NH.ToString() ? "selected" : "")>@nh.TenNH</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">Lọc</button>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">Thêm lịch học</button>
+            </div>
+        </form>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Lớp học phần</th>
+                <th>Học phần</th>
+                <th>Thứ</th>
+                <th>Tiết</th>
+                <th>Phòng học</th>
+                <th>Từ ngày</th>
+                <th>Đến ngày</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.LopHP.MaLop</td>
+                        <td>@item.LopHP.HocPhan.TenHP</td>
+                        <td>
+                            @(item.Thu == 2 ? "Thứ Hai" :
+                                  item.Thu == 3 ? "Thứ Ba" :
+                                  item.Thu == 4 ? "Thứ Tư" :
+                                  item.Thu == 5 ? "Thứ Năm" :
+                                  item.Thu == 6 ? "Thứ Sáu" : "Thứ Bảy")
+                        </td>
+                        <td>@item.Tiet</td>
+                        <td>@item.PhongHoc</td>
+                        <td>@item.TuNgay.ToString("dd/MM/yyyy")</td>
+                        <td>@item.DenNgay.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm edit-btn" data-id="@item.ID_LH">Sửa</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="@item.ID_LH">Xóa</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="text-center">Không có dữ liệu</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Thêm -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Thêm lịch học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="createModalBody">
+                <!-- Nội dung load bằng AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Sửa lịch học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="editModalBody">
+                <!-- Nội dung load bằng AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Load form thêm
+            $('#createModal').on('show.bs.modal', function () {
+                $.get('@Url.Action("Create")', function (data) {
+                    $('#createModalBody').html(data);
+                });
+            });
+
+            // Submit form thêm
+            $('#createModalBody').on('submit', '#createForm', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Create")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            $('#createModal').modal('hide');
+                            location.reload();
+                        } else {
+                            $('#createModalBody').html(result);
+                        }
+                    },
+                    error: function () {
+                        alert('Lỗi khi thêm lịch học.');
+                    }
+                });
+            });
+
+            // Load form sửa
+            $('.edit-btn').on('click', function () {
+                var id = $(this).data('id');
+                $.get('@Url.Action("Edit")/' + id, function (data) {
+                    $('#editModalBody').html(data);
+                    $('#editModal').modal('show');
+                });
+            });
+
+            // Submit form sửa
+            $('#editModalBody').on('submit', '#editForm', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Edit")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            $('#editModal').modal('hide');
+                            location.reload();
+                        } else {
+                            $('#editModalBody').html(result);
+                        }
+                    },
+                    error: function () {
+                        alert('Lỗi khi sửa lịch học.');
+                    }
+                });
+            });
+
+            // Xóa lịch học
+            $('.delete-btn').on('click', function () {
+                if (confirm('Bạn có chắc muốn xóa lịch học này?')) {
+                    var id = $(this).data('id');
+                    $.post('@Url.Action("Delete")', { id: id }, function (result) {
+                        if (result.success) {
+                            location.reload();
+                        } else {
+                            alert(result.error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

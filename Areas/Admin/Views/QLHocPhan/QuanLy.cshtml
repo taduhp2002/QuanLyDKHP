@@ -1,0 +1,383 @@
+﻿@model List<QuanLyDKHP.Models.HocPhan>
+@{
+    ViewBag.Title = "Quản Lý Học Phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Tiêu đề trang và nút thêm mới -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2 class="fw-bold text-primary mb-0">
+                <i class="fas fa-book-open me-2"></i>Quản Lý Học Phần
+            </h2>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+                <i class="fas fa-plus-circle me-2"></i>Thêm học phần
+            </button>
+        </div>
+    </div>
+
+    <!-- Thẻ thống kê -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase small mb-2 fw-bold">Tổng học phần</h6>
+                            <h2 class="fw-bold text-primary mb-0">@ViewBag.Tong</h2>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-book fs-3 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase small mb-2 fw-bold">Bắt buộc</h6>
+                            <h2 class="fw-bold text-success mb-0">@ViewBag.BatBuoc</h2>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-check-circle fs-3 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase small mb-2 fw-bold">Tự chọn</h6>
+                            <h2 class="fw-bold text-warning mb-0">@ViewBag.TuChon</h2>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-star fs-3 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách học phần -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-primary">
+                    <i class="fas fa-list me-2"></i>Danh sách học phần
+                </h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm" id="refreshBtn">
+                        <i class="fas fa-sync-alt me-1"></i>Làm mới
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="hocPhanTable">
+                    <thead class="table-primary">
+                        <tr>
+                            <th scope="col" width="5%">STT</th>
+                            <th scope="col" width="10%">Mã HP</th>
+                            <th scope="col" width="25%">Tên HP</th>
+                            <th scope="col" width="8%" class="text-center">Số TC</th>
+                            <th scope="col" width="12%">Loại</th>
+                            <th scope="col" width="25%">Mô tả</th>
+                            <th scope="col" width="15%" class="text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td><span class="fw-bold text-primary">@Model[i].MaHP</span></td>
+                                <td>@Model[i].TenHP</td>
+                                <td class="text-center fw-bold">@Model[i].SoTC</td>
+                                <td>
+                                    @if (Model[i].LoaiHP == 1)
+                                    {
+                                        <span class="badge bg-success text-white rounded-pill px-3 py-2">
+                                            <i class="fas fa-check-circle me-1"></i>Bắt buộc
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                            <i class="fas fa-star me-1"></i>Tự chọn
+                                        </span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(Model[i].MoTa) ? "Chưa có mô tả" : (Model[i].MoTa.Length > 50 ? Model[i].MoTa.Substring(0, 50) + "..." : Model[i].MoTa))</td>
+                                <td>
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal-@Model[i].ID_HP">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@Model[i].ID_HP">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm Học Phần -->
+<div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addCourseModalLabel">
+                    <i class="fas fa-plus-circle me-2"></i>Thêm học phần mới
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("Them", "QLHocPhan", FormMethod.Post, new { area = "Admin", @class = "row g-3 needs-validation", @id = "addCourseForm" }))
+                {
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Mã học phần <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                            <input type="text" name="MaHP" class="form-control" required maxlength="10" placeholder="Nhập mã học phần..." />
+                            <div class="invalid-feedback">Vui lòng nhập mã học phần</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Tên học phần <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-book"></i></span>
+                            <input type="text" name="TenHP" class="form-control" required placeholder="Nhập tên học phần..." />
+                            <div class="invalid-feedback">Vui lòng nhập tên học phần</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Số tín chỉ <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-award"></i></span>
+                            <input type="number" name="SoTC" min="1" max="10" value="3" class="form-control" required />
+                            <div class="invalid-feedback">Số tín chỉ phải từ 1-10</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Loại học phần</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-list-ul"></i></span>
+                            <select name="LoaiHP" class="form-select">
+                                <option value="1">Bắt buộc</option>
+                                <option value="2">Tự chọn</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Mô tả</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                            <textarea name="MoTa" class="form-control" rows="3" placeholder="Nhập mô tả học phần..."></textarea>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-1"></i>Thêm học phần
+                        </button>
+                        <button type="button" class="btn btn-secondary ms-2" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Hủy
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa và Xóa Học Phần -->
+@for (int i = 0; i < Model.Count; i++)
+{
+    <!-- Modal Sửa -->
+    <div class="modal fade" id="editModal-@Model[i].ID_HP" tabindex="-1" aria-labelledby="editModalLabel-@Model[i].ID_HP" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="editModalLabel-@Model[i].ID_HP">
+                        <i class="fas fa-edit me-2"></i>Sửa học phần: @Model[i].TenHP
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @using (Html.BeginForm("Sua", "QLHocPhan", FormMethod.Post, new { area = "Admin", @class = "row g-3 needs-validation" }))
+                    {
+                        @Html.Hidden("ID_HP", Model[i].ID_HP)
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Mã học phần <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                <input type="text" name="MaHP" value="@Model[i].MaHP" class="form-control" required maxlength="10" />
+                                <div class="invalid-feedback">Vui lòng nhập mã học phần</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Tên học phần <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-book"></i></span>
+                                <input type="text" name="TenHP" value="@Model[i].TenHP" class="form-control" required />
+                                <div class="invalid-feedback">Vui lòng nhập tên học phần</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Số tín chỉ <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-award"></i></span>
+                                <input type="number" name="SoTC" min="1" max="10" value="@Model[i].SoTC" class="form-control" required />
+                                <div class="invalid-feedback">Số tín chỉ phải từ 1-10</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Loại học phần</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-list-ul"></i></span>
+                                <select name="LoaiHP" class="form-select">
+                                    <option value="1" @(Model[i].LoaiHP == 1 ? "selected" : "")>Bắt buộc</option>
+                                    <option value="2" @(Model[i].LoaiHP == 2 ? "selected" : "")>Tự chọn</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Mô tả</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                                <textarea name="MoTa" class="form-control" rows="3">@Model[i].MoTa</textarea>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Lưu thay đổi
+                            </button>
+                            <button type="button" class="btn btn-secondary ms-2" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Hủy
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xóa -->
+    <div class="modal fade" id="deleteModal-@Model[i].ID_HP" tabindex="-1" aria-labelledby="deleteModalLabel-@Model[i].ID_HP" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel-@Model[i].ID_HP">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Bạn có chắc chắn muốn xóa học phần <strong>@Model[i].TenHP (@Model[i].MaHP)</strong>?</p>
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>Lưu ý: Hành động này không thể hoàn tác!
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    @using (Html.BeginForm("Xoa", "QLHocPhan", new { area = "Admin" }, FormMethod.Post))
+                    {
+                        @Html.Hidden("id", Model[i].ID_HP)
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Hủy
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-1"></i>Xóa học phần
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // DataTables initialization
+        const table = new DataTable('#hocPhanTable', {
+            language: {
+                search: "Tìm kiếm:",
+                lengthMenu: "Hiển thị _MENU_ dòng",
+                info: "Hiển thị _START_ đến _END_ của _TOTAL_ học phần",
+                infoEmpty: "Không có dữ liệu",
+                infoFiltered: "(lọc từ _MAX_ học phần)",
+                paginate: {
+                    first: "Đầu",
+                    previous: "<i class='fas fa-chevron-left'></i>",
+                    next: "<i class='fas fa-chevron-right'></i>",
+                    last: "Cuối"
+                },
+                emptyTable: "Không có dữ liệu học phần nào",
+                zeroRecords: "Không tìm thấy học phần nào phù hợp"
+            },
+            responsive: true,
+            pageLength: 10,
+            order: [[0, 'asc']],
+            columnDefs: [
+                { orderable: false, targets: [6] }
+            ],
+            dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-flex align-items-center"l><"d-flex"f>>t<"d-flex justify-content-between align-items-center mt-3"<"d-flex align-items-center"i><"d-flex"p>>'
+        });
+
+        // Form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', function () {
+            window.location.reload();
+        });
+
+        // Toastr configuration
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-top-right",
+            timeOut: 5000,
+            extendedTimeOut: 2000,
+            preventDuplicates: true
+        };
+    });
+</script>
+    
+@if (TempData["Success"] != null)
+{
+    <script>
+        toastr.success("@TempData["Success"]");
+    </script>
+}
+
+@if (TempData["Error"] != null)
+{
+    <script>
+        toastr.error("@TempData["Error"]");
+    </script>
+}

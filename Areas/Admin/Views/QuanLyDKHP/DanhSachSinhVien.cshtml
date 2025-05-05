@@ -1,0 +1,53 @@
+﻿@model IEnumerable<QuanLyDKHP.Models.DKHP>
+@{
+    ViewBag.Title = "Danh sách sinh viên đăng ký";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var lopHP = ViewBag.LopHP as QuanLyDKHP.Models.LopHP;
+}
+
+<h2>Danh sách sinh viên lớp @lopHP.MaLop - @lopHP.HocPhan.TenHP</h2>
+
+<p>
+    @Html.ActionLink("Thêm sinh viên", "ThemSinhVien", new { id = ViewBag.ID_LHP }, new { @class = "btn btn-success" })
+    @Html.ActionLink("Quay về danh sách lớp", "Index", null, new { @class = "btn btn-secondary" })
+</p>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mã sinh viên</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.SinhVien.MaSV</td>
+                    <td>@item.SinhVien.HoTen</td>
+                    <td>@item.SinhVien.Email</td>
+                    <td>
+                        @using (Html.BeginForm("XoaSinhVien", "QuanLyDKHP", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="idDK" value="@item.ID_DK" />
+                            <input type="hidden" name="idLHP" value="@ViewBag.ID_LHP" />
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa sinh viên này khỏi lớp?');">Xóa</button>
+                        }
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        Chưa có sinh viên đăng ký lớp học phần này.
+    </div>
+}

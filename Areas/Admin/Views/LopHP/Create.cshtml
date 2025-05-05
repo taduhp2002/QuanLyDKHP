@@ -1,0 +1,348 @@
+﻿@model QuanLyDKHP.Models.LopHP
+@{
+    ViewBag.Title = "Thêm lớp học phần mới";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!-- Main card container -->
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <!-- Card header -->
+    <div class="card-header bg-primary bg-gradient text-white py-3 rounded-top">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-plus-circle me-2"></i>
+            <h5 class="m-0 fw-bold">Thêm lớp học phần mới</h5>
+        </div>
+    </div>
+
+    <!-- Card body -->
+    <div class="card-body p-4">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "needs-validation", id = "createClassForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- Validation summary -->
+            if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger mb-4">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Lỗi!</strong> Vui lòng kiểm tra lại thông tin nhập liệu.
+                    @Html.ValidationSummary(true, "", new { @class = "list-unstyled mt-2 mb-0" })
+                </div>
+            }
+
+            <!-- Progress indicator -->
+            <div class="progress mb-4" style="height: 4px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 0%;"
+                     id="formProgress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+
+            <!-- Form inputs -->
+            <div class="row g-4">
+                <!-- Left column -->
+                <div class="col-md-6">
+                    <!-- Mã lớp -->
+                    <div class="mb-3">
+                        <label for="MaLop" class="form-label fw-medium">
+                            <i class="fas fa-hashtag text-secondary me-1 small"></i>
+                            @Html.LabelFor(model => model.MaLop)
+                            <span class="text-danger">*</span>
+                        </label>
+                        @Html.EditorFor(model => model.MaLop, new { htmlAttributes = new { @class = "form-control", placeholder = "Nhập mã lớp học phần" } })
+                        @Html.ValidationMessageFor(model => model.MaLop, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <!-- Học phần -->
+                    <div class="mb-3">
+                        <label for="ID_HP" class="form-label fw-medium">
+                            <i class="fas fa-book text-secondary me-1 small"></i>
+                            Học phần
+                            <span class="text-danger">*</span>
+                        </label>
+                        @Html.DropDownList("ID_HP", null, "-- Chọn học phần --", htmlAttributes: new { @class = "form-select select2-dropdown", data_placeholder = "Tìm và chọn học phần" })
+                        @Html.ValidationMessageFor(model => model.ID_HP, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <!-- Giảng viên -->
+                    <div class="mb-3">
+                        <label for="ID_GV" class="form-label fw-medium">
+                            <i class="fas fa-chalkboard-teacher text-secondary me-1 small"></i>
+                            Giảng viên
+                            <span class="text-danger">*</span>
+                        </label>
+                        @Html.DropDownList("ID_GV", null, "-- Chọn giảng viên --", htmlAttributes: new { @class = "form-select select2-dropdown", data_placeholder = "Tìm và chọn giảng viên" })
+                        @Html.ValidationMessageFor(model => model.ID_GV, "", new { @class = "text-danger small" })
+                    </div>
+                </div>
+
+                <!-- Right column -->
+                <div class="col-md-6">
+                    <!-- Học kỳ -->
+                    <div class="mb-3">
+                        <label for="ID_HK" class="form-label fw-medium">
+                            <i class="fas fa-calendar-alt text-secondary me-1 small"></i>
+                            Học kỳ
+                            <span class="text-danger">*</span>
+                        </label>
+                        @Html.DropDownList("ID_HK", null, "-- Chọn học kỳ --", htmlAttributes: new { @class = "form-select select2-dropdown", data_placeholder = "Chọn học kỳ" })
+                        @Html.ValidationMessageFor(model => model.ID_HK, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <!-- Năm học -->
+                    <div class="mb-3">
+                        <label for="ID_NH" class="form-label fw-medium">
+                            <i class="fas fa-graduation-cap text-secondary me-1 small"></i>
+                            Năm học
+                            <span class="text-danger">*</span>
+                        </label>
+                        @Html.DropDownList("ID_NH", null, "-- Chọn năm học --", htmlAttributes: new { @class = "form-select select2-dropdown", data_placeholder = "Chọn năm học" })
+                        @Html.ValidationMessageFor(model => model.ID_NH, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <!-- Sĩ số -->
+                    <div class="mb-3">
+                        <label for="SiSo" class="form-label fw-medium">
+                            <i class="fas fa-users text-secondary me-1 small"></i>
+                            @Html.LabelFor(model => model.SiSo)
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.SiSo, new { htmlAttributes = new { @class = "form-control", placeholder = "Nhập sĩ số tối đa", type = "number", min = "1" } })
+                            <span class="input-group-text bg-light">sinh viên</span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.SiSo, "", new { @class = "text-danger small" })
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form actions -->
+            <div class="d-flex flex-wrap justify-content-between gap-2 mt-4 pt-3 border-top">
+                <a href="@Url.Action("Index")" class="btn btn-light border-secondary fw-medium">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+                <div>
+                    <button type="reset" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-undo me-1"></i> Làm mới
+                    </button>
+                    <button type="submit" class="btn btn-primary fw-medium">
+                        <i class="fas fa-save me-1"></i> Lưu lớp học phần
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Card hướng dẫn -->
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-light py-3">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle me-2 text-primary"></i>
+            <h6 class="m-0 fw-bold">Hướng dẫn nhập liệu</h6>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info mb-0">
+            <h6 class="alert-heading fw-bold mb-2"><i class="fas fa-lightbulb me-2"></i>Lưu ý khi thêm lớp học phần</h6>
+            <ul class="mb-0">
+                <li><strong>Mã lớp:</strong> Theo định dạng [Mã học phần]-[Nhóm], ví dụ: CS101-01</li>
+                <li><strong>Học phần & Giảng viên:</strong> Gõ để tìm kiếm nhanh trong danh sách</li>
+                <li><strong>Sĩ số:</strong> Là số lượng sinh viên tối đa có thể đăng ký vào lớp</li>
+                <li>Tất cả các thông tin đều bắt buộc phải nhập</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Thêm CSS cần thiết cho Select2 và tối ưu UX -->
+<style>
+    /* Tùy chỉnh Select2 */
+    .select2-container--bootstrap-5 .select2-selection {
+        min-height: 38px;
+        border-color: #dee2e6;
+    }
+
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        padding-top: 0.375rem;
+        padding-bottom: 0.375rem;
+    }
+
+    .select2-container--bootstrap-5 .select2-dropdown {
+        border-color: #86b7fe;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .select2-container--bootstrap-5 .select2-search__field:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Phân trang cho dropdown dài */
+    .select2-results__options {
+        max-height: 200px;
+    }
+
+    /* Highlight kết quả tìm kiếm */
+    .select2-results__option--highlighted {
+        background-color: #f0f7ff !important;
+    }
+
+    /* Định dạng input number */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        opacity: 1;
+    }
+
+    /* Hiệu ứng hover cho nút */
+    .btn {
+        transition: all 0.2s;
+    }
+
+    /* Responsive cho màn hình nhỏ */
+    @@media (max-width: 576px) {
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .select2-dropdown {
+            width: auto !important;
+            min-width: 100% !important;
+        }
+
+        .d-flex.flex-wrap {
+            gap: 0.5rem !important;
+        }
+    }
+</style>
+
+<!-- Script xử lý UX -->
+<script>
+$(document).ready(function() {
+    // Cấu hình Select2 cho các dropdown có danh sách dài
+    $('.select2-dropdown').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        dropdownParent: $('#createClassForm'),
+        language: {
+            noResults: function() {
+                return "Không tìm thấy kết quả";
+            },
+            searching: function() {
+                return "Đang tìm...";
+            }
+        },
+        placeholder: function() {
+            return $(this).data('placeholder');
+        },
+        allowClear: true
+    });
+
+    // Học phần - cần tìm kiếm nâng cao
+    $('#ID_HP').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        dropdownParent: $('#createClassForm'),
+        language: {
+            noResults: function() {
+                return "Không tìm thấy học phần";
+            }
+        },
+        placeholder: "Tìm và chọn học phần",
+        allowClear: true,
+        minimumInputLength: 1, // Bắt buộc nhập ít nhất 1 ký tự
+        templateResult: formatHocPhan
+    });
+
+    // Định dạng hiển thị học phần
+    function formatHocPhan(hocphan) {
+        if (!hocphan.id) return hocphan.text;
+        var parts = hocphan.text.split(' - ');
+        if (parts.length > 1) {
+            return $('<span><strong>' + parts[0] + '</strong> - ' + parts.slice(1).join(' - ') + '</span>');
+        }
+        return hocphan.text;
+    }
+
+    // Giảng viên - cần tìm kiếm nâng cao
+    $('#ID_GV').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        dropdownParent: $('#createClassForm'),
+        language: {
+            noResults: function() {
+                return "Không tìm thấy giảng viên";
+            }
+        },
+        placeholder: "Tìm và chọn giảng viên",
+        allowClear: true,
+        minimumInputLength: 1 // Bắt buộc nhập ít nhất 1 ký tự
+    });
+
+    // Auto-suggest Mã lớp khi chọn học phần
+    $('#ID_HP').on('select2:select', function(e) {
+        var hpText = $(this).find(':selected').text();
+        var maHPMatch = hpText.match(/^([A-Z0-9]+)/);
+        if (maHPMatch && maHPMatch[1] && $('#MaLop').val() === '') {
+            $('#MaLop').val(maHPMatch[1] + '-01');
+        }
+    });
+
+    // Tự động cập nhật progress bar
+    function updateProgress() {
+        const totalFields = 6;
+        let filledFields = 0;
+
+        if ($('#MaLop').val()) filledFields++;
+        if ($('#ID_HP').val()) filledFields++;
+        if ($('#ID_GV').val()) filledFields++;
+        if ($('#ID_HK').val()) filledFields++;
+        if ($('#ID_NH').val()) filledFields++;
+        if ($('#SiSo').val()) filledFields++;
+
+        const progress = Math.floor((filledFields / totalFields) * 100);
+        $('#formProgress').css('width', progress + '%').attr('aria-valuenow', progress);
+
+        // Thay đổi màu khi hoàn thành
+        if (progress == 100) {
+            $('#formProgress').removeClass('bg-success').addClass('bg-primary');
+        } else {
+            $('#formProgress').removeClass('bg-primary').addClass('bg-success');
+        }
+    }
+
+    // Gắn sự kiện cập nhật progress
+    $('.select2-dropdown').on('select2:select select2:unselect', updateProgress);
+    $('#createClassForm input').on('input change', updateProgress);
+
+    // Khởi tạo progress ban đầu
+    updateProgress();
+
+    // Nút làm mới
+    $('button[type="reset"]').click(function(e) {
+        e.preventDefault();
+        $('#createClassForm')[0].reset();
+        $('.select2-dropdown').val(null).trigger('change');
+        updateProgress();
+        $('#MaLop').focus();
+    });
+
+    // Focus vào trường đầu tiên khi load trang
+    $('#MaLop').focus();
+
+    // Validate form trước khi submit
+    $('#createClassForm').on('submit', function(e) {
+        if (!this.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        $(this).addClass('was-validated');
+    });
+
+    // Kiểm tra sĩ số hợp lệ
+    $('#SiSo').on('input', function() {
+        var value = $(this).val();
+        if (value < 1) {
+            $(this).val(1);
+        }
+    });
+});
+</script>

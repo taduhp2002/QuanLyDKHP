@@ -1,0 +1,31 @@
+﻿@model QuanLyDKHP.Models.CauHinhDKHP
+
+@{
+    ViewBag.Title = "Chi tiết cấu hình";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="mt-3">Chi tiết cấu hình</h2>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Năm học:</dt>
+            <dd class="col-sm-9">@Model.NamHoc.TenNH</dd>
+
+            <dt class="col-sm-3">Học kỳ:</dt>
+            <dd class="col-sm-9">@Model.HocKy.TenHK</dd>
+
+            <dt class="col-sm-3">Ngày bắt đầu:</dt>
+            <dd class="col-sm-9">@Model.NgayBatDau.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Ngày kết thúc:</dt>
+            <dd class="col-sm-9">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Số TC tối đa:</dt>
+            <dd class="col-sm-9">@Model.SoTC_ToiDa</dd>
+        </dl>
+
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+    </div>
+</div>

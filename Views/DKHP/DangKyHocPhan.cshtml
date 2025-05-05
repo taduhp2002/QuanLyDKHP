@@ -1,0 +1,192 @@
+﻿@model List<QuanLyDKHP.Models.LopHP>
+@{
+    ViewBag.Title = "Đăng ký học phần";
+    Layout = "~/Views/Shared/_LayoutSV.cshtml";
+    int? idSV = Session["UserID"] as int?;
+}
+<div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "SinhVien")">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Đăng ký học phần</li>
+        </ol>
+    </nav>
+</div>
+<hr />
+@if (ViewBag.ThongBao != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bx bx-info-circle me-1"></i> @ViewBag.ThongBao
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+else
+{
+    if (TempData["Loi"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Loi"]</div>
+    }
+    if (TempData["ThanhCong"] != null)
+    {
+        <div class="alert alert-success">@TempData["ThanhCong"]</div>
+    }
+
+    <table id="dsLopHP" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Mã lớp</th>
+                <th>Tên học phần</th>
+                <th>Số TC</th>
+                <th>Giảng viên</th>
+                <th>Lịch học</th>
+                <th>Số lượng / Sĩ số</th>
+                <th class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var l in Model)
+            {
+                var daDangKy = l.DKHPs.Any(d => d.ID_SV == idSV && d.TrangThai == 1);
+                var idDK = l.DKHPs.FirstOrDefault(d => d.ID_SV == idSV && d.TrangThai == 1)?.ID_DK;
+
+                <tr>
+                    <td>@l.MaLop</td>
+                    <td>@l.HocPhan.TenHP</td>
+                    <td>@l.HocPhan.SoTC</td>
+                    <td>@l.GiangVien.HoTen</td>
+                    <td>
+                        @foreach (var lich in l.LichHocs)
+                        {
+                            <div>@($"Thứ {lich.Thu}, Tiết {lich.Tiet}, {lich.PhongHoc}")</div>
+                        }
+                    </td>
+                    <td>@l.DKHPs.Count(d => d.TrangThai == 1) / @l.SiSo</td>
+
+                    <td class="text-center">
+                        @if (daDangKy)
+                        {
+                            <!-- Nút Hủy -->
+                            <button type="button" class="btn btn-danger btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalHuy"
+                                    data-id="@idDK"
+                                    data-ten="@l.HocPhan.TenHP">
+                                Hủy
+                            </button>
+
+                            <!-- Nút Đã đăng ký -->
+                            <button class="btn btn-secondary btn-sm mt-1" disabled>Đã đăng ký</button>
+                        }
+                        else
+                        {
+                            <!-- Nút Đăng ký -->
+                            <button type="button" class="btn btn-success btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDangKy"
+                                    data-id="@l.ID_LHP"
+                                    data-ten="@l.HocPhan.TenHP">
+                                Đăng ký
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!-- Modal Đăng ký -->
+<div class="modal fade" id="modalDangKy" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("XuLyDangKy", "DKHP", FormMethod.Post))
+            {
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận đăng ký</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn đăng ký học phần <strong id="tenHP_DK"></strong>?
+                    @Html.Hidden("idLHP", "", new { id = "idLHP_DK" })
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Đồng ý</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Hủy -->
+<div class="modal fade" id="modalHuy" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("HuyHocPhan", "DKHP", FormMethod.Post))
+            {
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận hủy học phần</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn muốn hủy học phần <strong id="tenHP_Huy"></strong>?
+                    @Html.Hidden("idDK", "", new { id = "idDK_Huy" })
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#dsLopHP').DataTable({
+                language: {
+                    "decimal": "",
+                    "emptyTable": "Không có dữ liệu trong bảng",
+                    "info": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                    "infoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                    "infoFiltered": "(lọc từ _MAX_ mục)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Hiển thị _MENU_ mục",
+                    "loadingRecords": "Đang tải...",
+                    "processing": "Đang xử lý...",
+                    "search": "Tìm kiếm:",
+                    "zeroRecords": "Không tìm thấy kết quả phù hợp",
+                    "paginate": {
+                        "first": "Đầu tiên",
+                        "last": "Cuối cùng",
+                        "next": "Tiếp",
+                        "previous": "Trước"
+                    },
+                    "aria": {
+                        "sortAscending": ": sắp xếp tăng dần",
+                        "sortDescending": ": sắp xếp giảm dần"
+                    }
+                }
+            });
+        });
+
+        // Gán dữ liệu cho modal đăng ký
+        const modalDangKy = document.getElementById('modalDangKy');
+        modalDangKy.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            document.getElementById('idLHP_DK').value = button.getAttribute('data-id');
+            document.getElementById('tenHP_DK').textContent = button.getAttribute('data-ten');
+        });
+
+        // Gán dữ liệu cho modal hủy
+        const modalHuy = document.getElementById('modalHuy');
+        modalHuy.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            document.getElementById('idDK_Huy').value = button.getAttribute('data-id');
+            document.getElementById('tenHP_Huy').textContent = button.getAttribute('data-ten');
+        });
+    </script>
+}

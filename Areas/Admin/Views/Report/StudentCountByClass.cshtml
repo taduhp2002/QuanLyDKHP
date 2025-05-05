@@ -1,0 +1,381 @@
+﻿
+@model List<QuanLyDKHP.Models.LopHP>
+@{
+    ViewBag.Title = "Thống kê SL Sinh viên theo Lớp học phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!-- Bootstrap 5 CSS & Font Awesome -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-chart-bar me-2"></i>@ViewBag.Title</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("StudentCountByClass", "Report", FormMethod.Get, new { @class = "row row-cols-lg-auto g-3 align-items-center" }))
+                    {
+                        <div class="col-12">
+                            <div class="input-group">
+                                <span class="input-group-text">Học kỳ</span>
+                                @Html.DropDownList("hocKyId", ViewBag.HocKyList as SelectList, "--- Tất cả ---", new { @class = "form-select" })
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group">
+                                <span class="input-group-text">Năm học</span>
+                                @Html.DropDownList("namHocId", ViewBag.NamHocList as SelectList, "--- Tất cả ---", new { @class = "form-select" })
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter me-1"></i> Lọc
+                            </button>
+                        </div>
+                        <div class="col-12">
+                            @Html.ActionLink("Xuất Excel", "ExportStudentCountToExcel",
+                                new { hocKyId = Request.QueryString["hocKyId"], namHocId = Request.QueryString["namHocId"] },
+                                new { @class = "btn btn-success", id = "exportExcelBtn" })
+                            <i class="fas fa-file-excel ms-1"></i>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>Danh sách lớp học phần</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped" id="classTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Mã Lớp</th>
+                                    <th>Tên Học Phần</th>
+                                    <th>Giảng Viên</th>
+                                    <th>Sĩ Số Tối Đa</th>
+                                    <th>SL Đăng Ký</th>
+                                    <th>Tỷ Lệ (%)</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    double tyLe = (item.SiSo > 0) ? ((double)item.DKHPs.Count(d => d.TrangThai == 1) / item.SiSo * 100) : 0;
+                                    string rowClass = "";
+
+                                    if (tyLe >= 90)
+                                    {
+                                        rowClass = "table-danger";
+                                    }
+                                    else if (tyLe >= 80)
+                                    {
+                                        rowClass = "table-warning";
+                                    }
+                                    else if (tyLe <= 30)
+                                    {
+                                        rowClass = "table-info";
+                                    }
+
+
+                                    <tr class="@rowClass">
+                                        <td>@item.MaLop</td>
+                                        <td>@item.HocPhan.TenHP</td>
+                                        <td>@item.GiangVien.HoTen</td>
+                                        <td>@item.SiSo</td>
+                                        <td>@item.DKHPs.Count(d => d.TrangThai == 1)</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                    <div class="progress-bar @(tyLe >= 90 ? "bg-danger" : tyLe >= 80 ? "bg-warning" : tyLe >= 60 ? "bg-success" : "bg-info")"
+                                                         role="progressbar" style="width: @tyLe%;"
+                                                         aria-valuenow="@tyLe" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="badge @(tyLe >= 90 ? "bg-danger" : tyLe >= 80 ? "bg-warning" : tyLe >= 60 ? "bg-success" : "bg-info")">
+                                                    @tyLe.ToString("F1")%
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                @Html.ActionLink("Xem", "StudentListByClass", new { id = item.ID_LHP },
+                                                    new { @class = "btn btn-outline-primary", @data_bs_toggle = "tooltip", @title = "Xem danh sách sinh viên" })
+                                                @Html.ActionLink("PDF", "ExportStudentListToPdf", new { id = item.ID_LHP },
+                                                    new { @class = "btn btn-outline-danger", @data_bs_toggle = "tooltip", @title = "Xuất danh sách PDF" })
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Tổng số lớp học phần: @Model.Count</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow border-0">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-chart-column me-2"></i>Thống kê số lượng sinh viên</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="courseRegistrationChart" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Card tổng kết số liệu -->
+            <div class="card shadow border-0 mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Tổng kết</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">Tổng lớp</h6>
+                                            <h4 class="mb-0" id="totalClasses">@Model.Count</h4>
+                                        </div>
+                                        <i class="fas fa-chalkboard fa-2x opacity-75"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">Tổng SV</h6>
+                                            <h4 class="mb-0" id="totalStudents">@Model.Sum(item => item.DKHPs.Count(d => d.TrangThai == 1))</h4>
+                                        </div>
+                                        <i class="fas fa-user-graduate fa-2x opacity-75"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">Lớp đầy</h6>
+                                            <h4 class="mb-0" id="fullClasses">@Model.Count(item => (double)item.DKHPs.Count(d => d.TrangThai == 1) / item.SiSo >= 0.9)</h4>
+                                        </div>
+                                        <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card bg-info text-white">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">Lớp ít</h6>
+                                            <h4 class="mb-0" id="lowClasses">@Model.Count(item => (double)item.DKHPs.Count(d => d.TrangThai == 1) / item.SiSo <= 0.3)</h4>
+                                        </div>
+                                        <i class="fas fa-circle-info fa-2x opacity-75"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Bootstrap 5 JS & Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Khởi tạo tooltip Bootstrap
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // DataTable (nếu có thư viện)
+            if ($.fn.DataTable) {
+                $('#classTable').DataTable({
+                    language: {
+                        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                    },
+                    pageLength: 10
+                });
+            }
+
+            // Lấy giá trị filter hiện tại
+            var currentHocKyId = $('#hocKyId').val() || null;
+            var currentNamHocId = $('#namHocId').val() || null;
+
+            // Lấy dữ liệu biểu đồ
+            $.ajax({
+                url: '@Url.Action("GetCourseRegistrationChartData", "Report")',
+                type: 'GET',
+                data: { hocKyId: currentHocKyId, namHocId: currentNamHocId },
+                success: function (result) {
+                    if (result.success) {
+                        // Tạo biểu đồ với nhiều tuỳ chỉnh hơn
+                        const ctx = document.getElementById('courseRegistrationChart').getContext('2d');
+
+                        // Tạo màu gradient cho cột
+                        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                        gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
+                        gradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
+
+                        // Giới hạn số lượng học phần hiển thị nếu quá nhiều
+                        let labels = result.labels;
+                        let data = result.data;
+                        const maxBars = 10; // Số lượng cột tối đa hiển thị
+
+                        if (labels.length > maxBars) {
+                            // Xác định top 10 học phần có sinh viên nhiều nhất
+                            let combinedData = [];
+                            for (let i = 0; i < labels.length; i++) {
+                                combinedData.push({ label: labels[i], value: data[i] });
+                            }
+
+                            combinedData.sort((a, b) => b.value - a.value);
+                            combinedData = combinedData.slice(0, maxBars);
+
+                            labels = combinedData.map(item => item.label);
+                            data = combinedData.map(item => item.value);
+                        }
+
+                        // Tạo biểu đồ mới với nhiều tuỳ chỉnh
+                        const myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Số lượng SV đăng ký',
+                                    data: data,
+                                    backgroundColor: gradient,
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1,
+                                    borderRadius: 6,
+                                    barThickness: 'flex',
+                                    maxBarThickness: 30,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                        titleFont: {
+                                            size: 14
+                                        },
+                                        bodyFont: {
+                                            size: 13
+                                        },
+                                        padding: 10,
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `Số SV: ${context.raw} sinh viên`;
+                                            }
+                                        }
+                                    },
+                                    datalabels: {
+                                        color: '#333',
+                                        anchor: 'end',
+                                        align: 'top',
+                                        formatter: function(value) {
+                                            return value;
+                                        },
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1,
+                                            font: {
+                                                size: 12
+                                            }
+                                        },
+                                        grid: {
+                                            display: true,
+                                            color: 'rgba(0, 0, 0, 0.05)'
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            font: {
+                                                size: 11
+                                            },
+                                            maxRotation: 45,
+                                            minRotation: 45
+                                        },
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                },
+                                animation: {
+                                    duration: 1000,
+                                    easing: 'easeOutQuart'
+                                }
+                            }
+                        });
+
+                        // Thêm sự kiện click để xem chi tiết lớp học phần (nếu cần)
+                        document.getElementById('courseRegistrationChart').onclick = function(evt) {
+                            const points = myChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+
+                            if (points.length) {
+                                const firstPoint = points[0];
+                                const label = myChart.data.labels[firstPoint.index];
+                                // Có thể thực hiện chuyển hướng hoặc lọc dữ liệu tại đây
+                                console.log('Lớp được chọn:', label);
+                            }
+                        };
+                    } else {
+                        console.error("Lỗi khi lấy dữ liệu biểu đồ.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Ajax error:", status, error);
+                }
+            });
+
+            // Cập nhật biểu đồ khi filter thay đổi
+            $('#hocKyId, #namHocId').change(function() {
+                // Cập nhật URL trên nút xuất Excel
+                var hocKyId = $('#hocKyId').val() || '';
+                var namHocId = $('#namHocId').val() || '';
+                var newHref = '@Url.Action("ExportStudentCountToExcel")?hocKyId=' + hocKyId + '&namHocId=' + namHocId;
+                $('#exportExcelBtn').attr('href', newHref);
+            });
+        });
+    </script>
+}

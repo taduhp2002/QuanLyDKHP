@@ -1,0 +1,176 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md animate-fade-in-up">
+        <!-- Login Card -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden relative mb-6">
+            <!-- Top Border Gradient -->
+            <div class="h-1 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
+
+            <div class="p-8">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <!-- Logo -->
+                    <div class="w-24 h-24 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg shadow-blue-200 transform transition-transform duration-300 hover:-translate-y-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-12 h-12 fill-white">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"></path>
+                        </svg>
+                    </div>
+                    <!-- Title -->
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        Đăng nhập
+                        <span class="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider ml-1 shadow-sm">Admin</span>
+                    </h2>
+                </div>
+
+                <!-- Form -->
+                <form action="/Admin/Admin/Login" method="post">
+                    <!-- Username Field -->
+                    <div class="mb-6">
+                        <label for="maAdmin" class="block text-sm font-medium text-gray-700 mb-2">Mã Admin</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text"
+                                   name="maAdmin"
+                                   id="maAdmin"
+                                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-gray-900"
+                                   placeholder="Nhập mã admin"
+                                   required />
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-6">
+                        <label for="matKhau" class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <input type="password"
+                                   name="matKhau"
+                                   id="matKhau"
+                                   class="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-gray-900"
+                                   placeholder="Nhập mật khẩu"
+                                   required />
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <button type="button" id="togglePassword" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="flex items-center mb-6">
+                        <input id="remember"
+                               name="remember"
+                               type="checkbox"
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                        <label for="remember" class="ml-2 block text-sm text-gray-700">
+                            Ghi nhớ đăng nhập
+                        </label>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="error-message" class="mb-6 flex items-center p-4 bg-red-50 border-l-4 border-red-500 rounded-lg hidden">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                        <span class="text-red-800">@ViewBag.Error</span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-medium transition duration-200 transform hover:-translate-y-0.5">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Đăng nhập
+                    </button>
+                </form>
+
+                <!-- Forgot Password Link -->
+                <div class="text-center mt-6">
+                    <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-800 transition duration-200">
+                        Quên mật khẩu?
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-500 text-sm">
+            <p>© 2025 Hệ thống Quản lý Đào tạo | <a href="#" class="text-blue-600 hover:text-blue-800 transition duration-200">Trợ giúp</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Hiển thị thông báo lỗi nếu có
+        window.onload = function() {
+            var errorMessage = "@ViewBag.Error";
+            if (errorMessage && errorMessage.trim() !== "") {
+                document.getElementById("error-message").classList.remove("hidden");
+            }
+        };
+
+        // Hiệu ứng ẩn/hiện mật khẩu
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordField = document.getElementById('matKhau');
+            const toggleButton = document.getElementById('togglePassword');
+            const toggleIcon = toggleButton.querySelector('i');
+
+            toggleButton.addEventListener('click', function() {
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordField.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

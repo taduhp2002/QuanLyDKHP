@@ -1,0 +1,33 @@
+﻿@model QuanLyDKHP.Models.HocPhan
+<div class="modal-header">
+    <h5 class="modal-title">Chi tiết học phần: @Model.TenHP</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <p><strong>Mã học phần:</strong> @Model.MaHP</p>
+            <p><strong>Tên học phần:</strong> @Model.TenHP</p>
+            <p><strong>Số tín chỉ:</strong> @Model.SoTC</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Loại học phần:</strong> @(Model.LoaiHP == 1 ? "Bắt buộc" : "Tự chọn")</p>
+            @if (!string.IsNullOrEmpty(Model.DeCuong))
+            {
+                <p><strong>Đề cương:</strong> <a href="@Model.DeCuong" target="_blank">Xem đề cương</a></p>
+            }
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.MoTa))
+    {
+        <div class="mb-3">
+            <h5>Mô tả học phần</h5>
+            <p>@Model.MoTa</p>
+        </div>
+    }
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>

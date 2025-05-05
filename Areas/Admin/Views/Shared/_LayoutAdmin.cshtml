@@ -1,0 +1,653 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Quản lý đăng ký học phần</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        /* Header styles */
+        .main-header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 280px;
+            height: 70px;
+            background-color: #fff;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            padding: 0 1.5rem;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+            .main-header.collapsed {
+                left: 70px;
+            }
+
+        .header-title {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+            .user-profile .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: #e6f2ff;
+                color: #3a7bd5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+            }
+
+        .header-text {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            color: #dc3545;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+            .logout-btn:hover {
+                background-color: #fff5f5;
+            }
+
+            .logout-btn i {
+                margin-right: 5px;
+            }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 290px;
+            background-color: #fff;
+            color: #495057;
+            transition: all 0.3s ease;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            padding-top: 1rem;
+        }
+
+      .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem;
+            border-top: 1px solid #f1f1f1;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+
+        .sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 0.5rem 1rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #f1f1f1;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #3a7bd5;
+            display: flex;
+            align-items: center;
+        }
+
+            .sidebar-logo i {
+                font-size: 1.5rem;
+                margin-right: 1px;
+                color: #3a7bd5;
+            }
+
+        .sidebar .nav-link {
+            color: #6c757d;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            border-radius: 5px;
+            margin: 0.2rem 0.8rem;
+            position: relative;
+        }
+
+            .sidebar .nav-link:hover {
+                background-color: #f0f4f9;
+                color: #3a7bd5;
+            }
+
+            .sidebar .nav-link.active {
+                background-color: #e6f2ff;
+                color: #3a7bd5;
+                font-weight: 600;
+            }
+
+            .sidebar .nav-link i {
+                margin-right: 12px;
+                width: 20px;
+                text-align: center;
+                font-size: 1.1rem;
+                transition: all 0.3s;
+            }
+
+            .sidebar .nav-link .link-text {
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                white-space: nowrap;
+                opacity: 1;
+            }
+
+        .sidebar.collapsed .nav-link .link-text {
+            opacity: 0;
+            transform: translateX(10px);
+            position: absolute;
+        }
+
+        .sidebar.collapsed .sidebar-logo-text {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-logo i {
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0;
+            font-size: 1.3rem;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        /* Submenu styles */
+        .sidebar .collapse {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin: 0 0.8rem;
+        }
+
+            .sidebar .collapse .nav-link {
+                padding-left: 3.2rem;
+                font-size: 0.9rem;
+            }
+
+        /* Toggle button */
+        .toggle-btn {
+            background-color: transparent;
+            color: #3a7bd5;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem;
+            cursor: pointer;
+            height: 38px;
+            width: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            margin-right: 15px;
+        }
+
+            .toggle-btn:hover {
+                background-color: #e6f2ff;
+            }
+
+            .toggle-btn i {
+                transition: transform 0.3s;
+            }
+
+        .sidebar.collapsed + .main-wrapper .toggle-btn i {
+            transform: rotate(180deg);
+        }
+
+        /* Main content wrapper */
+        .main-wrapper {
+            margin-left: 280px;
+            padding: 85px 10px 10px;
+            width: calc(100% - 280px);
+            transition: all 0.3s ease;
+        }
+
+            .main-wrapper.collapsed {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+        /* Tooltip for collapsed sidebar */
+        .sidebar.collapsed .nav-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: 0;
+            padding-right: 0;
+            height: 48px;
+        }
+
+        .tooltip-sidebar {
+            position: absolute;
+            left: 70px;
+            background-color: #343a40;
+            color: #fff;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            white-space: nowrap;
+            z-index: 1002;
+        }
+
+        .sidebar.collapsed .nav-link:hover .tooltip-sidebar {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Content cards */
+        .content-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        /* Header flex container */
+        .header-container {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .main-wrapper {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .main-header {
+                left: 70px;
+            }
+
+            .sidebar .nav-link .link-text {
+                opacity: 0;
+                transform: translateX(10px);
+                position: absolute;
+            }
+
+            .sidebar-logo-text {
+                display: none;
+            }
+
+            .sidebar .nav-link i {
+                margin-right: 0;
+                font-size: 1.3rem;
+            }
+
+            .sidebar .sidebar-header {
+                justify-content: center;
+                padding: 1rem 0;
+            }
+        }
+        /* Loading overlay container */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(248, 249, 250, 0.9); /* Matches body background with opacity */
+    z-index: 10000; /* Above sidebar and header */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease; /* Faster fade for responsiveness */
+}
+
+/* Loader animation */
+.loader {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #e6f2ff; /* Light blue from your palette */
+    border-top: 5px solid #3a7bd5; /* Primary color */
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite; /* Smooth, continuous spin */
+}
+
+/* Spin animation */
+@@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+    </style>
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span class="sidebar-logo-text">QUẢN LÝ ĐĂNG KÝ HỌC PHẦN </span>
+            </div>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="@Url.Action("Index", "Dashboard")">
+                    <i class="fas fa-home"></i>
+                    <span class="link-text">Trang chủ</span>
+                    <span class="tooltip-sidebar">Trang chủ</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#courseMenu" role="button" aria-expanded="false" aria-controls="courseMenu">
+                    <i class="fas fa-book"></i>
+                    <span class="link-text">Học phần</span>
+                    <span class="tooltip-sidebar">Học phần</span>
+                </a>
+                <div class="collapse" id="courseMenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("DanhSach", "QLHocPhan")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Danh sách học phần</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("QuanLy", "QLHocPhan")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Quản lý học phần</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("DeCuong", "QLHocPhan")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Đề cương chi tiết</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#classMenu" role="button" aria-expanded="false" aria-controls="classMenu">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span class="link-text">Quản lý lớp học phần</span>
+                    <span class="tooltip-sidebar">Quản lý lớp học phần</span>
+                </a>
+                <div class="collapse" id="classMenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "LopHP")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Danh sách lớp</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Create", "LopHP")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Mở lớp mới</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "LichHoc")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Quản lý lịch học</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#studentMenu" role="button" aria-expanded="false" aria-controls="studentMenu">
+                    <i class="fas fa-users"></i>
+                    <span class="link-text">Sinh viên đăng ký</span>
+                    <span class="tooltip-sidebar">Sinh viên đăng ký</span>
+                </a>
+                <div class="collapse" id="studentMenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "QuanLyDKHP")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Danh sách đăng ký</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("ThemSinhVien", "QuanLyDKHP")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Quản lý đăng ký</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#reportMenu" role="button" aria-expanded="false" aria-controls="reportMenu">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="link-text">Thống kê & Báo cáo</span>
+                    <span class="tooltip-sidebar">Thống kê & Báo cáo</span>
+                </a>
+                <div class="collapse" id="reportMenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "LichHoc")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Thống kê đăng ký</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("StudentCountByClass", "Report")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Xuất báo cáo</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#configMenu" role="button" aria-expanded="false" aria-controls="configMenu">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="link-text">Cấu hình ĐKHP</span>
+                    <span class="tooltip-sidebar">Cấu hình ĐKHP</span>
+                </a>
+                <div class="collapse" id="configMenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "CauHinhDKHP")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Thiết lập</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "CauHinh")">
+                                <i class="fas fa-circle fa-xs"></i>
+                                <span class="link-text">Thêm cấu hình</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "LH")">
+                    <i class="fas fa-cog"></i>
+                    <span class="link-text">Cấu hình</span>
+                    <span class="tooltip-sidebar">Cấu hình</span>
+                </a>
+            </li>
+        </ul>
+        
+        <footer class="sidebar-footer">
+            © 2025 ĐATN | Phạm Phú Đạt - 09_ĐH_CNPM2
+        </footer>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper" id="mainWrapper">
+        <!-- Header -->
+        <header class="main-header" id="mainHeader">
+            <div class="header-container">
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h4 class="header-title mb-0">KHOA CÔNG NGHỆ THÔNG TIN</h4>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="header-text">Xin chào, @Session["UserName"]</span>
+                <a href="@Url.Action("Logout", "Account")" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
+        </header>
+        <!-- Loading Overlay -->
+        <div id="loading-overlay">
+            <div class="loader"></div>
+        </div>
+
+        <!-- Page Content -->
+        <div class="container-fluid">
+            <div class="content-card">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS and Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <!-- Custom JS -->
+    <script>
+        $(document).ready(function () {
+            const sidebar = $('#sidebar');
+            const mainWrapper = $('#mainWrapper');
+            const mainHeader = $('#mainHeader');
+            const toggleBtn = $('#toggleSidebar');
+            let isCollapsed = false;
+
+            // Toggle sidebar
+            toggleBtn.click(function () {
+                isCollapsed = !isCollapsed;
+                sidebar.toggleClass('collapsed', isCollapsed);
+                mainWrapper.toggleClass('collapsed', isCollapsed);
+                mainHeader.toggleClass('collapsed', isCollapsed);
+
+                if (!isCollapsed) {
+                    $('.link-text').removeAttr('style');
+                    $('.sidebar-logo-text').show();
+                } else {
+                    $('.link-text').css('opacity', '0').css('transform', 'translateX(10px)');
+                    $('.sidebar-logo-text').hide();
+                    $('.collapse.show').removeClass('show');
+                }
+            });
+
+            // mouseenter/mouseleave
+            sidebar.on('mouseenter', function () {
+                if (isCollapsed) {
+                    sidebar.removeClass('collapsed');
+                    mainWrapper.removeClass('collapsed');
+                    mainHeader.removeClass('collapsed');
+                    $('.link-text').removeAttr('style');
+                    $('.sidebar-logo-text').show();
+                }
+            }).on('mouseleave', function () {
+                if (isCollapsed) {
+                    sidebar.addClass('collapsed');
+                    mainWrapper.addClass('collapsed');
+                    mainHeader.addClass('collapsed');
+                    $('.link-text').css('opacity', '0').css('transform', 'translateX(10px)');
+                    $('.sidebar-logo-text').hide();
+                }
+            });
+
+            // Add active class to current nav item
+            const currentLocation = window.location.pathname;
+            $('.nav-link').each(function () {
+                const linkHref = $(this).attr('href');
+                if (linkHref && linkHref !== '#') {
+                    const cleanHref = linkHref.split('?')[0];
+                    if (currentLocation.includes(cleanHref)) {
+                        $(this).addClass('active');
+                        // Open parent collapse if in submenu
+                        const parentCollapseId = $(this).parents('.collapse').attr('id');
+                        if (parentCollapseId) {
+                            $(`[data-bs-toggle="collapse"][href="#${parentCollapseId}"]`).addClass('active');
+                            $(`#${parentCollapseId}`).addClass('show');
+                        }
+                    }
+                }
+            });
+        });
+        window.addEventListener('load', function () {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.opacity = 0;
+                setTimeout(() => overlay.style.display = 'none', 500); // Fade-out
+            }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

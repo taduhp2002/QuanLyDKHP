@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "ThongKePDF";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@model IEnumerable<dynamic>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Báo cáo thống kê</title>
+</head>
+<body>
+    <h2>Thống kê số sinh viên đăng ký</h2>
+    <table border="1" cellpadding="5" cellspacing="0" style="width:100%">
+        <thead>
+            <tr>
+                <th>Mã lớp</th>
+                <th>Học phần</th>
+                <th>Số lượng đăng ký</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MaLop</td>
+                    <td>@item.TenHP</td>
+                    <td>@item.SoLuong</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
+
+

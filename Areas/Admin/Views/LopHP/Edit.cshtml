@@ -1,0 +1,275 @@
+﻿@model QuanLyDKHP.Models.LopHP
+@{
+    ViewBag.Title = "Sửa lớp học phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!-- Card chính -->
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <!-- Header card -->
+    <div class="card-header bg-primary bg-gradient text-white py-3 rounded-top">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-edit me-2"></i>
+            <h5 class="m-0 fw-bold">Sửa thông tin lớp học phần</h5>
+        </div>
+    </div>
+
+    <!-- Body card -->
+    <div class="card-body p-4">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "needs-validation", id = "editClassForm" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ID_LHP)
+
+            <!-- Progress indicator -->
+            <div class="progress mb-4" style="height: 4px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 0%;"
+                     id="formProgress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+
+            <!-- Form thông tin -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <!-- Mã lớp -->
+                    <div class="form-floating mb-3">
+                        @Html.EditorFor(model => model.MaLop, new { htmlAttributes = new { @class = "form-control", placeholder = " " } })
+                        @Html.LabelFor(model => model.MaLop, new { @class = "form-label" })
+                        @Html.ValidationMessageFor(model => model.MaLop, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- Học phần -->
+                    <div class="mb-3">
+                        <label for="ID_HP" class="form-label fw-medium">Học phần</label>
+                        @Html.DropDownList("ID_HP", null, htmlAttributes: new { @class = "form-select select2-dropdown", data_placeholder = "Chọn học phần" })
+                        @Html.ValidationMessageFor(model => model.ID_HP, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- Giảng viên -->
+                    <div class="mb-3">
+                        <label for="ID_GV" class="form-label fw-medium">Giảng viên</label>
+                        @Html.DropDownList("ID_GV", null, htmlAttributes: new { @class = "form-select select2-dropdown", data_placeholder = "Chọn giảng viên" })
+                        @Html.ValidationMessageFor(model => model.ID_GV, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Học kỳ -->
+                    <div class="mb-3">
+                        <label for="ID_HK" class="form-label fw-medium">Học kỳ</label>
+                        @Html.DropDownList("ID_HK", null, htmlAttributes: new { @class = "form-select select2-dropdown", data_placeholder = "Chọn học kỳ" })
+                        @Html.ValidationMessageFor(model => model.ID_HK, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- Năm học -->
+                    <div class="mb-3">
+                        <label for="ID_NH" class="form-label fw-medium">Năm học</label>
+                        @Html.DropDownList("ID_NH", null, htmlAttributes: new { @class = "form-select select2-dropdown", data_placeholder = "Chọn năm học" })
+                        @Html.ValidationMessageFor(model => model.ID_NH, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- Sĩ số -->
+                    <div class="form-floating mb-3">
+                        @Html.EditorFor(model => model.SiSo, new { htmlAttributes = new { @class = "form-control", placeholder = " " } })
+                        @Html.LabelFor(model => model.SiSo, new { @class = "form-label" })
+                        @Html.ValidationMessageFor(model => model.SiSo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form actions -->
+            <div class="d-flex justify-content-between gap-2 mt-4">
+                <a href="@Url.Action("Index")" class="btn btn-light border-secondary fw-medium">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại
+                </a>
+                <button type="submit" class="btn btn-primary fw-medium">
+                    <i class="fas fa-save me-1"></i> Lưu thay đổi
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Card hướng dẫn -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-light py-3">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle me-2 text-primary"></i>
+            <h6 class="m-0 fw-bold">Hướng dẫn sử dụng</h6>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info mb-0">
+            <ul class="mb-0">
+                <li>Điền đầy đủ thông tin và chọn đúng các trường trong form.</li>
+                <li>
+                    Với các danh sách dài (Học phần, Giảng viên):
+                    <ul>
+                        <li>Gõ để tìm kiếm nhanh (ít nhất 1 ký tự)</li>
+                        <li>Có thể tìm theo mã hoặc tên</li>
+                    </ul>
+                </li>
+                <li>Mã lớp nên tuân theo định dạng chuẩn của trường.</li>
+                <li>Sĩ số phải là số nguyên dương và phù hợp với quy định.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Thêm CSS cần thiết cho Select2 -->
+<style>
+    /* Tùy chỉnh cho Select2 */
+    .select2-container--bootstrap-5 .select2-selection {
+        min-height: 38px;
+        border-color: #dee2e6;
+    }
+
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        padding-top: 0.375rem;
+        padding-bottom: 0.375rem;
+    }
+
+    .select2-container--bootstrap-5 .select2-dropdown {
+        border-color: #86b7fe;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .select2-container--bootstrap-5 .select2-search__field:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Phân trang cho dropdown dài */
+    .select2-results__options {
+        max-height: 200px;
+    }
+
+    /* Highlight kết quả tìm kiếm */
+    .select2-results__option--highlighted {
+        background-color: #f0f7ff !important;
+    }
+
+    /* Responsive trên màn hình nhỏ */
+    @@media (max-width: 576px) {
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .select2-dropdown {
+            width: auto !important;
+            min-width: 100% !important;
+        }
+    }
+</style>
+
+<!-- Script hỗ trợ UX -->
+<script>
+    $(document).ready(function () {
+        // Cấu hình Select2 cho các dropdown có danh sách dài
+        $('.select2-dropdown').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            dropdownParent: $('#editClassForm'),
+            language: {
+                noResults: function () {
+                    return "Không tìm thấy kết quả";
+                },
+                searching: function () {
+                    return "Đang tìm...";
+                }
+            },
+            placeholder: function () {
+                return $(this).data('placeholder');
+            },
+            allowClear: true,
+            minimumInputLength: 0,
+            maximumSelectionLength: 1,
+            closeOnSelect: true
+        });
+
+        // Học phần thường có nhiều dữ liệu hơn, cần tìm kiếm tốt hơn
+        $('#ID_HP').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            dropdownParent: $('#editClassForm'),
+            language: {
+                noResults: function () {
+                    return "Không tìm thấy học phần";
+                },
+                searching: function () {
+                    return "Đang tìm...";
+                }
+            },
+            placeholder: "Chọn học phần",
+            allowClear: true,
+            minimumInputLength: 1, // Bắt buộc nhập ít nhất 1 ký tự để tìm kiếm
+            templateResult: formatHocPhan
+        });
+
+        // Định dạng hiển thị học phần (giả định có mã và tên)
+        function formatHocPhan(hocphan) {
+            if (!hocphan.id) return hocphan.text;
+            // Giả định text có dạng "MãHP - Tên học phần"
+            var parts = hocphan.text.split(' - ');
+            if (parts.length > 1) {
+                return $('<span><strong>' + parts[0] + '</strong> - ' + parts.slice(1).join(' - ') + '</span>');
+            }
+            return hocphan.text;
+        }
+
+        // Giảng viên cũng cần tìm kiếm tốt
+        $('#ID_GV').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            dropdownParent: $('#editClassForm'),
+            language: {
+                noResults: function () {
+                    return "Không tìm thấy giảng viên";
+                },
+                searching: function () {
+                    return "Đang tìm...";
+                }
+            },
+            placeholder: "Chọn giảng viên",
+            allowClear: true,
+            minimumInputLength: 1 // Bắt buộc nhập ít nhất 1 ký tự để tìm kiếm
+        });
+
+        // Tự động cập nhật progress bar khi nhập liệu
+        function updateProgress() {
+            const totalFields = 6;
+            let filledFields = 0;
+
+            if ($('#MaLop').val()) filledFields++;
+            if ($('#ID_HP').val()) filledFields++;
+            if ($('#ID_GV').val()) filledFields++;
+            if ($('#ID_HK').val()) filledFields++;
+            if ($('#ID_NH').val()) filledFields++;
+            if ($('#SiSo').val()) filledFields++;
+
+            const progress = Math.floor((filledFields / totalFields) * 100);
+            $('#formProgress').css('width', progress + '%').attr('aria-valuenow', progress);
+        }
+
+        // Khi select2 thay đổi, cập nhật progress
+        $('.select2-dropdown').on('select2:select select2:unselect', updateProgress);
+
+        // Gắn sự kiện cập nhật progress cho input thường
+        $('#editClassForm input').on('change keyup', updateProgress);
+
+        // Khởi tạo progress ban đầu
+        updateProgress();
+
+        // Cho phép di chuyển giữa các trường bằng phím mũi tên
+        $(document).on('keydown', '.select2-dropdown', function (e) {
+            if (e.keyCode === 13) { // Enter key
+                e.preventDefault();
+                $(this).blur();
+                var fields = $('#editClassForm input, #editClassForm select.select2-dropdown');
+                var index = fields.index(this);
+                if (index > -1 && index < fields.length - 1) {
+                    fields.eq(index + 1).focus();
+                }
+            }
+        });
+    });
+</script>

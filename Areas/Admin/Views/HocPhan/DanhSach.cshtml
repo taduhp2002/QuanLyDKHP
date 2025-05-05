@@ -1,0 +1,132 @@
+﻿@model List<QuanLyDKHP.Models.HocPhan>
+@{
+    ViewBag.Title = "Danh Sách Học Phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section styles {
+    <!-- DataTables -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <!-- Toastr -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+}
+
+<div class="card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-book me-2 text-primary"></i>Danh Sách Học Phần
+        </h5>
+        <a href="@Url.Action("QuanLy", "QLHocPhan")" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i> Thêm học phần mới
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="danhSachHPTable" class="table table-striped table-hover border-secondary">
+                <thead class="table-light">
+                    <tr>
+                        <th width="5%">STT</th>
+                        <th width="10%">Mã HP</th>
+                        <th width="25%">Tên HP</th>
+                        <th width="8%">Số TC</th>
+                        <th width="12%">Loại</th>
+                        <th width="25%">Mô tả</th>
+                        <th width="15%">Đề cương</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var dc = Model[i].DeCuong;
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td>@Model[i].MaHP</td>
+                            <td>@Model[i].TenHP</td>
+                            <td class="text-center">@Model[i].SoTC</td>
+                            <td>
+                                @if (Model[i].LoaiHP == 1)
+                                {
+                                    <span class="badge bg-primary">Bắt buộc</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">Tự chọn</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(Model[i].MoTa) && Model[i].MoTa.Length > 50)
+                                {
+                                    <span>@Model[i].MoTa.Substring(0, 50)...</span>
+                                    <button type="button" class="btn btn-link btn-sm p-0 ms-1"
+                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="@Model[i].MoTa">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    @Model[i].MoTa
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(dc))
+                                {
+                                    <a href="@Url.Content(dc)" class="btn btn-sm btn-outline-success" target="_blank">
+                                        <i class="fas fa-file-pdf me-1"></i> Xem
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Chưa có</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            $('#danhSachHPTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
+                },
+                responsive: true,
+                order: [[0, 'asc']],
+                columnDefs: [
+                    { orderable: false, targets: 6 }
+                ]
+            });
+
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("@TempData["Success"]");
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            toastr.error("@TempData["Error"]");
+        </script>
+    }
+}

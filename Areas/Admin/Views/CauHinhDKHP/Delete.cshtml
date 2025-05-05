@@ -1,0 +1,50 @@
+﻿@model QuanLyDKHP.Models.CauHinhDKHP
+
+@{
+    ViewBag.Title = "Xóa cấu hình đăng ký học phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <h2>Xóa cấu hình đăng ký học phần</h2>
+
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">Bạn có chắc chắn muốn xóa cấu hình này?</h4>
+        <p>Thao tác này không thể hoàn tác. Vui lòng xác nhận trước khi tiếp tục.</p>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Năm học:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.NamHoc.TenNH)</dd>
+
+                <dt class="col-sm-3">Học kỳ:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.HocKy.TenHK)</dd>
+
+                <dt class="col-sm-3">Số tín chỉ tối đa:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.SoTC_ToiDa)</dd>
+
+                <dt class="col-sm-3">Ngày bắt đầu:</dt>
+                <dd class="col-sm-9">@Model.NgayBatDau.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3">Ngày kết thúc:</dt>
+                <dd class="col-sm-9">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</dd>
+            </dl>
+        </div>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Xác nhận xóa
+            </button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Hủy bỏ
+            </a>
+        </div>
+    }
+</div>

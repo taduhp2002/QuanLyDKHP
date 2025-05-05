@@ -1,0 +1,165 @@
+﻿
+@model dynamic
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section Styles {
+    <style>
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+            .card h4 {
+                margin-top: 0;
+                color: #333;
+            }
+
+            .card p {
+                font-size: 1.2em;
+                color: #555;
+            }
+
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Biểu đồ số lượng đăng ký theo học phần
+            const courseRegistrations = @Html.Raw(Json.Encode(ViewBag.CourseRegistrations));
+            const ctx1 = document.getElementById('courseChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: courseRegistrations.map(c => c.TenHP),
+                    datasets: [{
+                        label: 'Số lượng đăng ký',
+                        data: courseRegistrations.map(c => c.Registrations),
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Số sinh viên' } },
+                        x: { title: { display: true, text: 'Học phần' } }
+                    }
+                }
+            });
+
+            // Biểu đồ trạng thái lớp học phần
+            const courseStatus = @Html.Raw(Json.Encode(ViewBag.CourseStatus));
+            const ctx2 = document.getElementById('statusChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mở', 'Đóng', 'Hủy'],
+                    datasets: [{
+                        data: [courseStatus.Open, courseStatus.Closed, courseStatus.Canceled],
+                        backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                        borderColor: ['#fff', '#fff', '#fff'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+<div class="container">
+    <h2>Dashboard Quản Trị</h2>
+    <div class="row">
+        <!-- Thông tin tổng quan -->
+        <div class="col-md-3">
+            <div class="card">
+                <h4>Học Kỳ</h4>
+                <p>@(ViewBag.CurrentHocKy?.TenHK ?? "N/A") - @(ViewBag.CurrentNamHoc?.TenNH ?? "N/A")</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <h4>Thời Gian Đăng Ký</h4>
+                <p>@(ViewBag.CauHinh != null ? $"{ViewBag.CauHinh.NgayBatDau:dd/MM/yyyy} - {ViewBag.CauHinh.NgayKetThuc:dd/MM/yyyy}" : "Chưa thiết lập")</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <h4>Học Phần Mở</h4>
+                <p>@ViewBag.OpenCourses</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <h4>Sinh Viên Đăng Ký</h4>
+                <p>@ViewBag.RegisteredStudents</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biểu đồ -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h4>Số Lượng Đăng Ký Theo Học Phần</h4>
+                <canvas id="courseChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h4>Trạng Thái Lớp Học Phần</h4>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách đăng ký gần đây -->
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Đăng Ký Gần Đây</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Mã SV</th>
+                        <th>Họ Tên</th>
+                        <th>Học Phần</th>
+                        <th>Thời Gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.RecentRegistrations)
+                    {
+                        <tr>
+                            <td>@item.SinhVien.MaSV</td>
+                            <td>@item.SinhVien.HoTen</td>
+                            <td>@item.LopHP.HocPhan.TenHP</td>
+                            <td>@item.ThoiGianDangKy.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

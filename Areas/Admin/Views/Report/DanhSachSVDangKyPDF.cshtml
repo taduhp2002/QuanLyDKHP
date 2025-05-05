@@ -1,0 +1,39 @@
+﻿@model IEnumerable<QuanLyDKHP.Models.SinhVien>
+@{
+    ViewBag.Title = "Danh sách sinh viên đăng ký";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var lopHP = ViewBag.LopHP as QuanLyDKHP.Models.LopHP;
+}
+
+<h2 class="text-center">DANH SÁCH SINH VIÊN ĐĂNG KÝ</h2>
+<h3 class="text-center">@lopHP.HocPhan.TenHP - @lopHP.MaLop</h3>
+<h4 class="text-center">Giảng viên: @lopHP.GiangVien.HoTen</h4>
+<h4 class="text-center">Sĩ số: @Model.Count()/@lopHP.SiSo</h4>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Mã SV</th>
+            <th>Họ tên</th>
+            <th>Ngày sinh</th>
+            <th>Email</th>
+            <th>Niên khóa</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int stt = 1; }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@stt</td>
+                <td>@item.MaSV</td>
+                <td>@item.HoTen</td>
+                <td>@item.NgaySinh.ToString("dd/MM/yyyy")</td>
+                <td>@item.Email</td>
+                <td>@item.NienKhoa</td>
+            </tr>
+            stt++;
+        }
+    </tbody>
+</table>

@@ -1,0 +1,42 @@
+﻿
+@model IEnumerable<QuanLyDKHP.Models.SinhVien>
+@{
+    ViewBag.Title = "Danh sách Sinh viên";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.LopHPInfo</h3>
+@Html.ActionLink("Quay lại Thống kê", "StudentCountByClass") |
+@* Nút Export PDF *@
+@Html.ActionLink("Xuất PDF", "ExportStudentListToPdf", new { id = Request.QueryString["id"] }, new { @class = "btn btn-danger" })
+<br />
+<br />
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Mã SV</th>
+            <th>Họ Tên</th>
+            <th>Giới Tính</th>
+            <th>Ngày Sinh</th>
+            <th>Email</th>
+            <th>Niên Khóa</th>
+            @* Thêm các cột khác nếu cần *@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.MaSV)</td>
+                <td>@Html.DisplayFor(modelItem => item.HoTen)</td>
+                <td>@(item.GioiTinh ? "Nam" : "Nữ")</td>
+                <td>@Html.DisplayFor(modelItem => item.NgaySinh)</td> @* Cần định dạng ngày nếu muốn *@
+                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                <td>@Html.DisplayFor(modelItem => item.NienKhoa)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

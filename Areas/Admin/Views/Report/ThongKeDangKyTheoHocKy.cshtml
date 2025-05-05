@@ -1,0 +1,111 @@
+﻿
+
+@model IEnumerable<dynamic>
+@{
+    ViewBag.Title = "Thống kê đăng ký theo học kỳ";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var hocKyList = ViewBag.HocKyList as List<QuanLyDKHP.Models.HocKy>;
+    var namHocList = ViewBag.NamHocList as List<QuanLyDKHP.Models.NamHoc>;
+    var selectedHocKy = ViewBag.SelectedHocKy as int?;
+    var selectedNamHoc = ViewBag.SelectedNamHoc as int?;
+    var chartData = ViewBag.ChartData as IEnumerable<dynamic>;
+}
+
+
+@using (Html.BeginForm())
+{
+    <div class="form-group row">
+        <label class="col-md-2 control-label">Học kỳ</label>
+        <div class="col-md-4">
+            @Html.DropDownList("idHocKy", new SelectList(hocKyList, "ID_HK", "TenHK", selectedHocKy),
+                "-- Chọn học kỳ --", new { @class = "form-control" })
+        </div>
+        <label class="col-md-2 control-label">Năm học</label>
+        <div class="col-md-4">
+            @Html.DropDownList("idNamHoc", new SelectList(namHocList, "ID_NH", "TenNH", selectedNamHoc),
+                "-- Chọn năm học --", new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Thống kê" class="btn btn-primary" />
+            @if (selectedHocKy.HasValue && selectedNamHoc.HasValue)
+            {
+                @Html.ActionLink("Xuất Excel", "ExportDangKyHPToExcel",
+                    new { idHocKy = selectedHocKy, idNamHoc = selectedNamHoc },
+                    new { @class = "btn btn-success" })
+            }
+        </div>
+    </div>
+}
+
+@if (chartData != null && chartData.Any())
+{
+    <div class="row">
+        <div class="col-md-12">
+            <canvas id="dangKyChart" height="100"></canvas>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Tên học phần</th>
+                        <th>Số lượng đăng ký</th>
+                        <th>Số lượng lớp</th>
+                        <th>Tỷ lệ đăng ký (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in chartData)
+                    {
+                        <tr>
+                            <td>@item.TenHP</td>
+                            <td>@item.SoLuongDangKy</td>
+                            <td>@item.SoLuongLop</td>
+                            <td>@Math.Round(item.TiLeDangKy, 2)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            var chartData = @Html.Raw(Json.Encode(chartData));
+            if (chartData && chartData.length > 0) {
+                var ctx = document.getElementById('dangKyChart').getContext('2d');
+                var labels = chartData.map(item => item.TenHP);
+                var data = chartData.map(item => item.SoLuongDangKy);
+
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Số lượng đăng ký',
+                            data: data,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
+

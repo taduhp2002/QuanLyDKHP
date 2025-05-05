@@ -1,0 +1,74 @@
+﻿
+@model IEnumerable<dynamic>
+@{
+    ViewBag.Title = "Thống kê theo học phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <canvas id="hocPhanChart" height="100"></canvas>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-md-12">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tên học phần</th>
+                    <th>Số lượng lớp</th>
+                    <th>Số lượng đăng ký</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.TenHP</td>
+                        <td>@item.SoLuongLop</td>
+                        <td>@item.SoLuongDangKy</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            var chartData = @Html.Raw(Json.Encode(Model));
+            if (chartData && chartData.length > 0) {
+                var ctx = document.getElementById('hocPhanChart').getContext('2d');
+                var labels = chartData.map(item => item.TenHP);
+                var data = chartData.map(item => item.SoLuongDangKy);
+
+                var myChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Số lượng đăng ký',
+                            data: data,
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
+

@@ -1,0 +1,121 @@
+﻿@model IEnumerable<QuanLyDKHP.Models.CauHinhDKHP>
+@{
+    ViewBag.Title = "Danh sách cấu hình đăng ký học phần";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh sách cấu hình đăng ký học phần</h1>
+        <div>
+            <a href="@Url.Action("Create")" class="btn btn-primary d-inline-flex align-items-center">
+                <i class="fas fa-plus me-1"></i> Thêm mới
+            </a>
+            <a href="@Url.Action("CheckStatus")" class="btn btn-info d-inline-flex align-items-center ms-2">
+                <i class="fas fa-info-circle me-1"></i> Kiểm tra trạng thái
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4 border-0">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách cấu hình</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="configTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">STT</th>
+                            <th width="15%">Năm học</th>
+                            <th width="15%">Học kỳ</th>
+                            <th width="15%">Số TC tối đa</th>
+                            <th width="15%">Ngày bắt đầu</th>
+                            <th width="15%">Ngày kết thúc</th>
+                            <th width="15%" class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int i = 1; }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(i++)</td>
+                                <td>@Html.DisplayFor(modelItem => item.NamHoc.TenNH)</td>
+                                <td>@Html.DisplayFor(modelItem => item.HocKy.TenHK)</td>
+                                <td>@Html.DisplayFor(modelItem => item.SoTC_ToiDa)</td>
+                                <td>@item.NgayBatDau.ToString("dd/MM/yyyy")</td>
+                                <td>@item.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="@Url.Action("Details", new { id = item.ID })" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", new { id = item.ID })" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="@Url.Action("Delete", new { id = item.ID })" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        @if (Model.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-3">Không có dữ liệu cấu hình</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Kích hoạt tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Tự động đóng thông báo alert sau 3 giây
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 3000);
+
+            // DataTable cho bảng cấu hình (tùy chọn)
+            // Uncomment nếu bạn đã tích hợp DataTables
+            /*
+            $("#configTable").DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
+                },
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Tất cả"]]
+            });
+            */
+        });
+    </script>
+}

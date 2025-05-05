@@ -1,0 +1,199 @@
+﻿@{
+    ViewBag.Title = "Trang chủ sinh viên";
+    Layout = "~/Views/Shared/_LayoutSV.cshtml";
+    var sinhVien = ViewBag.SinhVien as QuanLyDKHP.Models.SinhVien;
+    var cauHinh = ViewBag.CauHinh as QuanLyDKHP.Models.CauHinhDKHP;
+    int soTC = ViewBag.SoTC;
+}
+
+<div class="container py-4">
+    <!-- Header with student info -->
+    <div class="card mb-4 border-0 bg-light shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-person-circle fs-1 me-3 text-primary"></i>
+                <div>
+                    <h2 class="mb-0">Chào mừng, @sinhVien.HoTen!</h2>
+                    <p class="text-muted mb-0">
+                        <span class="badge bg-primary me-2">@sinhVien.MaSV</span>
+                        <i class="bi bi-envelope me-1"></i> @sinhVien.Email
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (cauHinh != null)
+    {
+        <!-- Main content with registration info -->
+        <div class="row g-4">
+            <!-- Left column - Registration details -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white d-flex align-items-center">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        <h5 class="mb-0">Thông tin đăng ký học phần</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">Năm học</label>
+                                    <p class="mb-0">@cauHinh.NamHoc.TenNH</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">Học kỳ</label>
+                                    <p class="mb-0">@cauHinh.HocKy.TenHK</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">Từ ngày</label>
+                                    <p class="mb-0">@cauHinh.NgayBatDau.ToString("dd/MM/yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">Đến ngày</label>
+                                    <p class="mb-0">@cauHinh.NgayKetThuc.ToString("dd/MM/yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">Tín chỉ tối đa</label>
+                                    <p class="mb-0">@cauHinh.SoTC_ToiDa</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">Đã đăng ký</label>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                            @{
+                                                var percentage = cauHinh.SoTC_ToiDa > 0 ? (soTC * 100) / cauHinh.SoTC_ToiDa : 0;
+                                            }
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: @percentage%;"
+                                                 aria-valuenow="@soTC" aria-valuemin="0" aria-valuemax="@cauHinh.SoTC_ToiDa"></div>
+                                        </div>
+                                        <span class="fw-bold text-success">@soTC</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-3">
+                            <a href="@Url.Action("DangKyHocPhan", "SinhVien")" class="btn btn-primary">
+                                <i class="bi bi-pencil-square me-2"></i>Đăng ký học phần
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column - Guidance and Quick links -->
+            <div class="col-lg-6">
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-info text-white d-flex align-items-center">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <h5 class="mb-0">Hướng dẫn đăng ký</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex">
+                                <div class="me-3 text-primary"><i class="bi bi-search fs-4"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Tìm học phần</h6>
+                                    <p class="mb-0 text-muted small">Xem danh sách học phần trong mục "Đăng ký học phần"</p>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex">
+                                <div class="me-3 text-primary"><i class="bi bi-file-earmark-text fs-4"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Đề cương chi tiết</h6>
+                                    <p class="mb-0 text-muted small">Tải đề cương chi tiết từ mục "Danh sách học phần"</p>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex">
+                                <div class="me-3 text-warning"><i class="bi bi-exclamation-triangle fs-4"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Hạn chế đăng ký</h6>
+                                    <p class="mb-0 text-muted small">Không thể đăng ký khi học phần đã đầy, bị trùng lịch hoặc vượt quá số tín chỉ</p>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex">
+                                <div class="me-3 text-danger"><i class="bi bi-calendar-x fs-4"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Hủy đăng ký</h6>
+                                    <p class="mb-0 text-muted small">Có thể hủy đăng ký trong thời gian cho phép</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-success text-white d-flex align-items-center">
+                        <i class="bi bi-link-45deg me-2"></i>
+                        <h5 class="mb-0">Truy cập nhanh</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="@Url.Action("LichHoc", "SinhVien")" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-calendar3 me-2"></i> Lịch học
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="@Url.Action("KetQuaHocTap", "SinhVien")" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-graph-up me-2"></i> Kết quả học tập
+                                </a>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <a href="@Url.Action("HocPhi", "SinhVien")" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-cash-coin me-2"></i> Học phí
+                                </a>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <a href="@Url.Action("ThongTinCaNhan", "SinhVien")" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person me-2"></i> Thông tin cá nhân
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- No registration period message -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body py-5 text-center">
+                <div class="mb-4">
+                    <i class="bi bi-calendar-x text-warning display-1"></i>
+                </div>
+                <h4 class="text-muted mb-3">Hiện tại không có đợt đăng ký học phần nào đang mở!</h4>
+                <p class="mb-4">Vui lòng quay lại sau hoặc liên hệ phòng đào tạo để biết thêm chi tiết.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="@Url.Action("LienHe", "SinhVien")" class="btn btn-outline-primary">
+                        <i class="bi bi-telephone me-2"></i>Liên hệ hỗ trợ
+                    </a>
+                    <a href="@Url.Action("ThongBao", "SinhVien")" class="btn btn-outline-secondary">
+                        <i class="bi bi-bell me-2"></i>Xem thông báo
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Add Bootstrap Icons to your layout -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

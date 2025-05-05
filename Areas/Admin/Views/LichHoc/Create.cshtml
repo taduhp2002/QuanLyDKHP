@@ -1,0 +1,218 @@
+﻿@model QuanLyDKHP.Models.LichHoc
+
+@{
+    ViewBag.Title = "Thêm lịch học";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="bi bi-calendar-plus"></i> Thêm lịch học</h2>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle text-primary me-2"></i>
+                <h5 class="card-title mb-0">Thông tin lớp học phần: <span class="fw-bold">@ViewBag.LopHP</span></h5>
+            </div>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.ID_LHP)
+
+                if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Lỗi!</strong> Vui lòng kiểm tra lại thông tin đã nhập.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-3 text-muted"><i class="bi bi-clock"></i> Thời gian và địa điểm</h6>
+
+                                <div class="mb-3">
+                                    <label for="Thu" class="form-label fw-medium">Thứ</label>
+                                    @Html.DropDownListFor(model => model.Thu, (SelectList)ViewBag.ThuOptions, "Chọn thứ", new { @class = "form-select", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.Thu, "", new { @class = "invalid-feedback" })
+                                    <div class="form-text">Chọn ngày trong tuần diễn ra lớp học</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="Tiet" class="form-label fw-medium">Tiết học</label>
+                                    @Html.DropDownListFor(model => model.Tiet, (SelectList)ViewBag.TietOptions, "Chọn tiết", new { @class = "form-select", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.Tiet, "", new { @class = "invalid-feedback" })
+                                    <div class="form-text">Chọn tiết học bắt đầu</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="PhongHoc" class="form-label fw-medium">Phòng học</label>
+                                    @Html.DropDownListFor(model => model.PhongHoc, (SelectList)ViewBag.PhongHocs, "Chọn phòng học", new { @class = "form-select", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.PhongHoc, "", new { @class = "invalid-feedback" })
+                                    <div class="form-text">Chọn phòng học cho lớp học phần</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-3 text-muted"><i class="bi bi-calendar-range"></i> Thời gian diễn ra</h6>
+
+                                <div class="mb-3">
+                                    <label for="TuNgay" class="form-label fw-medium">Từ ngày</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                        @Html.EditorFor(model => model.TuNgay, new { htmlAttributes = new { @class = "form-control", type = "date", @Value = Model?.TuNgay.ToString("yyyy-MM-dd"), required = "required", id = "TuNgay" } })
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.TuNgay, "", new { @class = "invalid-feedback" })
+                                    <div class="form-text">Ngày bắt đầu lớp học</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="DenNgay" class="form-label fw-medium">Đến ngày</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
+                                        @Html.EditorFor(model => model.DenNgay, new { htmlAttributes = new { @class = "form-control", type = "date", @Value = Model?.DenNgay.ToString("yyyy-MM-dd"), required = "required", id = "DenNgay" } })
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.DenNgay, "", new { @class = "invalid-feedback" })
+                                    <div class="form-text">Ngày kết thúc lớp học</div>
+                                </div>
+
+                                <div id="dateAlert" class="alert alert-danger mt-3 d-none">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Ngày kết thúc phải sau ngày bắt đầu
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4">
+                    <button type="submit" class="btn btn-primary px-4 me-2">
+                        <i class="bi bi-plus-circle me-1"></i> Thêm lịch học
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle me-1"></i> Hủy
+                    </a>
+                </div>
+            }
+        </div>
+        <div class="card-footer bg-white">
+            <div class="d-flex align-items-center">
+                <span class="badge rounded-pill bg-warning text-dark me-2"><i class="bi bi-exclamation-triangle"></i></span>
+                <span class="text-muted small">Lưu ý: Hãy kiểm tra kỹ thông tin lịch học để tránh trùng lịch với các lớp học phần khác.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận trùng lịch -->
+<div class="modal fade" id="conflictModal" tabindex="-1" aria-labelledby="conflictModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="conflictModalLabel"><i class="bi bi-exclamation-triangle me-2"></i>Cảnh báo trùng lịch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Thời gian lịch học bạn chọn có thể trùng với lịch học khác trong cùng phòng học hoặc cùng giảng viên.</p>
+                <p>Bạn có chắc chắn muốn tiếp tục?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kiểm tra lại</button>
+                <button type="button" class="btn btn-primary" id="confirmSchedule">Tiếp tục</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Form validation
+            const form = document.querySelector('.needs-validation');
+
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                // Kiểm tra ngày bắt đầu và kết thúc
+                const tuNgay = new Date(document.getElementById('TuNgay').value);
+                const denNgay = new Date(document.getElementById('DenNgay').value);
+                const dateAlert = document.getElementById('dateAlert');
+
+                if (tuNgay > denNgay) {
+                    event.preventDefault();
+                    dateAlert.classList.remove('d-none');
+                    document.getElementById('DenNgay').focus();
+                } else {
+                    dateAlert.classList.add('d-none');
+                }
+
+                form.classList.add('was-validated');
+            });
+
+            // Kiểm tra ngày khi thay đổi
+            const tuNgayInput = document.getElementById('TuNgay');
+            const denNgayInput = document.getElementById('DenNgay');
+            const dateAlert = document.getElementById('dateAlert');
+
+            [tuNgayInput, denNgayInput].forEach(input => {
+                input.addEventListener('change', function () {
+                    if (tuNgayInput.value && denNgayInput.value) {
+                        const tuNgay = new Date(tuNgayInput.value);
+                        const denNgay = new Date(denNgayInput.value);
+
+                        if (tuNgay > denNgay) {
+                            dateAlert.classList.remove('d-none');
+                        } else {
+                            dateAlert.classList.add('d-none');
+                        }
+                    }
+                });
+            });
+
+            // Tự động điền ngày hiện tại nếu trường rỗng
+            if (!tuNgayInput.value) {
+                const today = new Date();
+                const formattedDate = today.toISOString().slice(0, 10);
+                tuNgayInput.value = formattedDate;
+            }
+
+            // Tự động điền ngày kết thúc mặc định (4 tháng sau ngày bắt đầu) nếu trường rỗng
+            if (!denNgayInput.value && tuNgayInput.value) {
+                const tuNgay = new Date(tuNgayInput.value);
+                const denNgay = new Date(tuNgay);
+                denNgay.setMonth(denNgay.getMonth() + 4);
+                denNgayInput.value = denNgay.toISOString().slice(0, 10);
+            }
+
+            // Tự động cập nhật ngày kết thúc khi ngày bắt đầu thay đổi
+            // nếu ngày kết thúc < ngày bắt đầu hoặc chưa được thiết lập
+            tuNgayInput.addEventListener('change', function () {
+                const tuNgay = new Date(tuNgayInput.value);
+                const denNgay = denNgayInput.value ? new Date(denNgayInput.value) : null;
+
+                if (!denNgay || tuNgay > denNgay) {
+                    const newEndDate = new Date(tuNgay);
+                    newEndDate.setMonth(newEndDate.getMonth() + 4);
+                    denNgayInput.value = newEndDate.toISOString().slice(0, 10);
+                    dateAlert.classList.add('d-none');
+                }
+            });
+        });
+    </script>
+}
